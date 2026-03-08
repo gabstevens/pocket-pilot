@@ -4,7 +4,7 @@ import type { Transaction, TransactionType } from '../types';
 import CategoryIcon from './CategoryIcon';
 import AddCategoryModal from './AddCategoryModal';
 import { Plus, Minus } from 'lucide-react';
-import { COMMON_CURRENCIES } from '../constants';
+import { COMMON_CURRENCIES, CATEGORY_COLORS } from '../constants';
 
 const getCurrentLocalISO = () => {
   const now = new Date();
@@ -117,6 +117,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     }
   };
 
+  const getCategoryColor = (name: string) => {
+    return categories.find(c => c.name === name)?.color;
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="flex flex-col gap-none btn-full">
@@ -165,17 +169,32 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           <div className="flex flex-col gap-sm">
             {!readOnly && (
               <div className="category-grid">
-                {topCategories.map(cat => (
-                  <button
-                    key={cat.name}
-                    type="button"
-                    onClick={() => setCategory(cat.name)}
-                    aria-label={cat.name}
-                    className={`category-btn ${isCondensed ? 'category-btn-condensed' : ''} ${category === cat.name ? 'category-btn-active' : ''}`}
-                  >
-                    <CategoryIcon name={cat.icon} size={isCondensed ? 18 : 20} />
-                  </button>
-                ))}
+                {topCategories.map(cat => {
+                  const isActive = category === cat.name;
+                  const catColor = cat.color ? CATEGORY_COLORS[cat.color] : 'var(--text-color)';
+                  
+                  return (
+                    <button
+                      key={cat.name}
+                      type="button"
+                      onClick={() => setCategory(cat.name)}
+                      aria-label={cat.name}
+                      className={`category-btn ${isCondensed ? 'category-btn-condensed' : ''}`}
+                      style={{
+                        backgroundColor: isActive ? catColor : 'white',
+                        borderColor: isActive ? catColor : 'var(--border-color)',
+                        color: isActive ? 'white' : 'inherit'
+                      }}
+                    >
+                      <CategoryIcon 
+                        name={cat.icon} 
+                        size={isCondensed ? 18 : 20} 
+                        categoryColor={isActive ? undefined : cat.color}
+                        color={isActive ? 'white' : undefined}
+                      />
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -188,7 +207,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 className={`flex-1 p-${isCondensed ? 'sm' : 'md'}`}
               >
                 {categories.map(cat => (
-                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                  <option key={cat.name} value={cat.name}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
               {!readOnly && (

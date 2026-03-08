@@ -27,7 +27,8 @@
     "notePlaceholder": "Descrizione...",
     "submit": "Aggiungi Transazione",
     "addCategory": "Aggiungi Categoria",
-    "categoryName": "Nome Categoria"
+    "categoryName": "Nome Categoria",
+    "color": "Colore"
   },
   "dashboard": {
     "title": "Panoramica",

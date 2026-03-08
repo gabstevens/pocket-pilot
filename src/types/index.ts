@@ -3,6 +3,7 @@ export type TransactionType = 'income' | 'expense';
 export interface Category {
   name: string;
   icon?: string; // Lucide icon name
+  color?: string; // Color name from CATEGORY_COLORS
 }
 
 export interface Transaction {

@@ -2,6 +2,7 @@ import React, { useState, useId } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import CategoryIcon from './CategoryIcon';
 import { X } from 'lucide-react';
+import { CATEGORY_COLORS } from '../constants';
 
 const AVAILABLE_ICONS = [
   'Coffee', 'Bus', 'Wallet', 'Building', 'Gamepad2', 'Stethoscope', 
@@ -20,12 +21,13 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
   const id = useId();
   const [newCategory, setNewCategory] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('Tag');
+  const [selectedColor, setSelectedColor] = useState('blue');
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
       dispatch({ 
         type: 'ADD_CATEGORY', 
-        payload: { name: newCategory.trim(), icon: selectedIcon } 
+        payload: { name: newCategory.trim(), icon: selectedIcon, color: selectedColor } 
       });
       onSuccess(newCategory.trim());
       onClose();
@@ -55,6 +57,22 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
           />
         </div>
 
+        <div className="form-group mb-md">
+          <label>{t('add.color')}</label>
+          <div className="grid grid-cols-5 gap-sm pt-xs">
+            {Object.keys(CATEGORY_COLORS).map((colorName) => (
+              <button
+                key={colorName}
+                type="button"
+                onClick={() => setSelectedColor(colorName)}
+                aria-label={`Select ${colorName} color`}
+                className={`w-full aspect-square border-2 ${selectedColor === colorName ? 'border-black shadow-md' : 'border-transparent'}`}
+                style={{ backgroundColor: CATEGORY_COLORS[colorName] }}
+              />
+            ))}
+          </div>
+        </div>
+
         <div className="form-group">
           <label>Icon</label>
           <div className="icon-grid border-color">
@@ -66,7 +84,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
                 aria-label={`Select ${iconName} icon`}
                 className={`category-btn ${selectedIcon === iconName ? 'category-btn-active' : 'bg-white border-none'}`}
               >
-                <CategoryIcon name={iconName} size={20} />
+                <CategoryIcon name={iconName} size={20} categoryColor={selectedIcon === iconName ? undefined : selectedColor} />
               </button>
             ))}
           </div>

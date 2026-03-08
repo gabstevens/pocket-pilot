@@ -25,6 +25,7 @@
 - [x] Build the `Dashboard` page.
 - [x] Build the `History` page with full-screen edit modal.
 - [x] Build CSV Export/Import UI.
+- [x] Implement category color palette and selection.
 
 ## Infrastructure & Quality
 - [x] Configure Vitest with JSDOM for React/DOM testing.

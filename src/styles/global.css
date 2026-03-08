@@ -285,6 +285,11 @@ button.btn-type-toggle-condensed {
   gap: var(--spacing-sm);
 }
 
+.grid-cols-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
 .category-btn {
   display: flex;
   align-items: center;
@@ -456,6 +461,8 @@ button.btn-type-toggle-condensed {
 .w-14 { width: 56px; }
 .w-16 { width: 64px; }
 .h-16 { height: 64px; }
+
+.aspect-square { aspect-ratio: 1 / 1; }
 
 .max-h-90 { max-height: 90%; }
 .max-h-90dvh { max-height: 90dvh; }

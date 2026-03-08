@@ -4,6 +4,7 @@ import { Search, X, Calendar, FileText, Trash2, Edit2 } from 'lucide-react';
 import DateRangePicker from './DateRangePicker';
 import CategoryIcon from './CategoryIcon';
 import TransactionForm from './TransactionForm';
+import { CATEGORY_COLORS } from '../constants';
 
 const History: React.FC = () => {
   const { transactions, categories, dispatch, t, confirm, addToast } = useTransactions();
@@ -75,6 +76,11 @@ const History: React.FC = () => {
     return cat ? cat.icon : 'Tag';
   };
 
+  const getCategoryColor = (categoryName: string) => {
+    const cat = categories.find(c => c.name === categoryName);
+    return cat ? cat.color : undefined;
+  };
+
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
       <header className="p-sm border-bottom bg-white flex-shrink-0">
@@ -135,8 +141,19 @@ const History: React.FC = () => {
                     style={{ textAlign: 'left' }}
                   >
                     <div className="flex items-center gap-sm w-full">
-                      <div className="flex-shrink-0 w-9 flex justify-center">
-                        <CategoryIcon name={getCategoryIcon(t.category)} size={18} className="opacity-80" />
+                      <div 
+                        className="flex-shrink-0 w-9 h-9 flex items-center justify-center border-1"
+                        style={{ 
+                          backgroundColor: getCategoryColor(t.category) ? `${CATEGORY_COLORS[getCategoryColor(t.category)!]}15` : 'transparent',
+                          borderColor: getCategoryColor(t.category) ? CATEGORY_COLORS[getCategoryColor(t.category)!] : 'var(--border-color)'
+                        }}
+                      >
+                        <CategoryIcon 
+                          name={getCategoryIcon(t.category)} 
+                          size={18} 
+                          className="opacity-80" 
+                          categoryColor={getCategoryColor(t.category)}
+                        />
                       </div>
                       <div className="min-w-0 flex-1 text-left">
                         <span className="font-bold text-sm uppercase truncate block">
@@ -202,8 +219,18 @@ const History: React.FC = () => {
               ) : (
                 <div className="flex flex-col gap-lg">
                   <div className="flex flex-col items-center gap-md">
-                    <div className="w-16 h-16 bg-accent flex items-center justify-center border-2 border-color">
-                      <CategoryIcon name={getCategoryIcon(selectedTransaction.category)} size={32} />
+                    <div 
+                      className="w-16 h-16 flex items-center justify-center border-2"
+                      style={{ 
+                        backgroundColor: getCategoryColor(selectedTransaction.category) ? `${CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!]}15` : 'var(--accent-color)',
+                        borderColor: getCategoryColor(selectedTransaction.category) ? CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!] : 'var(--border-color)'
+                      }}
+                    >
+                      <CategoryIcon 
+                        name={getCategoryIcon(selectedTransaction.category)} 
+                        size={32} 
+                        categoryColor={getCategoryColor(selectedTransaction.category)}
+                      />
                     </div>
                     <div className="flex flex-col items-center">
                       <h2 className={`${selectedTransaction.type === 'income' ? 'text-success' : 'text-error'} text-2xl font-black m-0`}>
