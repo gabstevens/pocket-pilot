@@ -48,6 +48,22 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (isNewTransaction) {
+      dispatch({ 
+        type: 'SET_DRAFT_TRANSACTION', 
+        payload: { 
+          amount: amount === '' ? undefined : parseFloat(amount),
+          currency,
+          type,
+          category,
+          date,
+          note
+        } 
+      });
+    }
+  }, [amount, currency, type, category, date, note, isNewTransaction, dispatch]);
+
   const handleAmountChange = (val: string) => {
     let cleaned = val.replace(',', '.');
     cleaned = cleaned.replace(/[^0-9.]/g, '');
@@ -56,10 +72,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       cleaned = parts[0] + '.' + parts.slice(1).join('');
     }
     setAmount(cleaned);
-    
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { amount: cleaned === '' ? undefined : parseFloat(cleaned) } });
-    }
   };
 
   const handleTypeToggle = () => {

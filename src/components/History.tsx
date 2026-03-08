@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import type { Transaction } from '../types';
 import { X, Trash2, Edit2, Calendar, FileText } from 'lucide-react';
