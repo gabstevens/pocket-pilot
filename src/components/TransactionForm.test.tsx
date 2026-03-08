@@ -53,11 +53,11 @@ describe('TransactionForm', () => {
     const toggleBtn = screen.getByTitle(/expense/i);
     
     // Initially expense (Minus icon)
-    expect(toggleBtn).toHaveStyle({ background: 'var(--error-color)' });
+    expect(toggleBtn).toHaveClass('bg-expense');
 
     fireEvent.click(toggleBtn);
     
     // Now income (Plus icon) - Title update might need re-render check or just check style
-    expect(toggleBtn).toHaveStyle({ background: 'var(--success-color)' });
+    expect(toggleBtn).toHaveClass('bg-income');
   });
 });

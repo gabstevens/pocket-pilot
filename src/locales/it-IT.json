@@ -60,7 +60,7 @@
     "rateHelp": "Quanto di questa valuta equivale a 1 {{base}}?",
     "dataManagement": "Gestione Dati",
     "exportHelp": "Seleziona un intervallo di date per esportare i tuoi dati in CSV.",
-    "export": "Esporta Transazioni",
+    "export": "Esporta CSV",
     "importHelp": "Importa transazioni da un file CSV. Il file dovrebbe corrispondere al formato di esportazione.",
     "importWarning": "ATTENZIONE: L'importazione dei dati potrebbe causare duplicati se le stesse transazioni esistono già. Le transazioni con ID corrispondenti verranno aggiornate.",
     "import": "Importa CSV",

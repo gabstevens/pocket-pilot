@@ -1,306 +1,266 @@
 import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import type { Transaction } from '../types';
-import { X, Trash2, Edit2, Calendar, FileText } from 'lucide-react';
-import CategoryIcon from './CategoryIcon';
-import { useSearchParams } from 'react-router-dom';
+import { Search, X, Calendar, FileText, Trash2, Edit2 } from 'lucide-react';
 import DateRangePicker from './DateRangePicker';
+import CategoryIcon from './CategoryIcon';
 import TransactionForm from './TransactionForm';
 
 const History: React.FC = () => {
-  const { transactions, categories, dispatch, t, addToast, confirm, language } = useTransactions();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { transactions, categories, dispatch, t, confirm, addToast } = useTransactions();
   
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
   
-  const [startDate, setStartDate] = useState(searchParams.get('start') || firstDay);
-  const [endDate, setEndDate] = useState(searchParams.get('end') || lastDay);
-  const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || 'all');
-  
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [startDate, setStartDate] = useState(firstDay);
+  const [endDate, setEndDate] = useState(lastDay);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const updateFilters = (start: string, end: string, category: string) => {
-    setStartDate(start);
-    setEndDate(end);
-    setCategoryFilter(category);
-    const params: Record<string, string> = { start, end };
-    if (category !== 'all') params.category = category;
-    setSearchParams(params);
-  };
-
   const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
-      const dateOnly = t.date.split('T')[0];
-      const matchesDate = dateOnly >= startDate && dateOnly <= endDate;
-      const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
-      return matchesDate && matchesCategory;
-    });
-  }, [transactions, startDate, endDate, categoryFilter]);
+    return transactions
+      .filter(t => {
+        const dateOnly = t.date.split('T')[0];
+        const matchesDate = dateOnly >= startDate && dateOnly <= endDate;
+        const matchesSearch = (t.note || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                             t.category.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
+        return matchesDate && matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [transactions, startDate, endDate, searchTerm, selectedCategory]);
 
-  // Group by date
   const groupedTransactions = useMemo(() => {
-    const groups: Record<string, Transaction[]> = {};
+    const groups: { [key: string]: typeof transactions } = {};
     filteredTransactions.forEach(t => {
       const date = t.date.split('T')[0];
       if (!groups[date]) groups[date] = [];
       groups[date].push(t);
     });
-    return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
+    return groups;
   }, [filteredTransactions]);
 
-  const handleDelete = async (transaction: Transaction) => {
-    const confirmedResult = await confirm({
-      title: t('history.editTitle'),
-      message: `${t('history.deleteConfirm')} (${transaction.type === 'expense' ? '-' : '+'}${transaction.amount} ${transaction.currency})`
+  const selectedTransaction = useMemo(() => 
+    transactions.find(t => t.id === selectedTransactionId),
+    [transactions, selectedTransactionId]
+  );
+
+  const handleDelete = async () => {
+    if (!selectedTransactionId) return;
+    
+    const result = await confirm({
+      title: t('common.confirm'),
+      message: t('history.deleteConfirm')
     });
 
-    if (confirmedResult) {
-      dispatch({ type: 'DELETE_TRANSACTION', payload: transaction.id });
-      addToast(`${t('common.deleted')}`, 'info');
-      setSelectedTransaction(null);
+    if (result) {
+      dispatch({ type: 'DELETE_TRANSACTION', payload: selectedTransactionId });
+      setSelectedTransactionId(null);
+      addToast(t('common.deleted'), 'success');
     }
   };
 
-  const handleUpdate = (data: Partial<Transaction>) => {
-    if (selectedTransaction) {
-      const updated = { ...selectedTransaction, ...data };
-      dispatch({ type: 'UPDATE_TRANSACTION', payload: updated as Transaction });
-      addToast(`${t('common.updated')}`, 'success');
-      setSelectedTransaction(updated as Transaction);
-      setIsEditing(false);
-    }
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleString(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
   };
 
-  const getCategoryIcon = (catName: string) => {
-    return categories.find(c => c.name === catName)?.icon;
-  };
-
-  const formatDateTime = (isoString: string) => {
-    const [date, time] = isoString.split('T');
-    return `${date} ${time || ''}`;
-  };
-
-  const formatHeaderDate = (dateStr: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    if (dateStr === today) return 'TODAY';
-    
-    return new Intl.DateTimeFormat(language, { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'short' 
-    }).format(new Date(dateStr)).toUpperCase();
+  const getCategoryIcon = (categoryName: string) => {
+    const cat = categories.find(c => c.name === categoryName);
+    return cat ? cat.icon : 'Tag';
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
-      {/* Sticky Header & Filters - Outside the scrollable container */}
-      <div style={{ 
-        padding: 'var(--spacing-sm)', 
-        paddingTop: 'calc(var(--spacing-sm) + var(--safe-area-top))',
-        paddingLeft: 'calc(var(--spacing-sm) + var(--safe-area-left))',
-        paddingRight: 'calc(var(--spacing-sm) + var(--safe-area-right))',
-        background: '#fafafa', 
-        borderBottom: '1px solid var(--border-color)', 
-        zIndex: 10 
-      }}>
+    <div className="flex flex-col h-full w-full overflow-hidden">
+      <header className="p-sm border-bottom bg-white flex-shrink-0">
         <h1>{t('history.title')}</h1>
-
-        <div className="flex flex-col gap-none">
+        
+        <div className="flex flex-col gap-sm">
           <DateRangePicker 
             startDate={startDate} 
             endDate={endDate} 
-            onChange={(s, e) => updateFilters(s, e, categoryFilter)} 
+            onChange={(start, end) => {
+              setStartDate(start);
+              setEndDate(end);
+            }} 
           />
-          
-          <div className="form-group" style={{ marginTop: '-8px', marginBottom: 0 }}>
-            <label htmlFor="history-category-filter">{t('history.category')}</label>
+
+          <div className="flex gap-sm">
+            <div className="flex-1 relative">
+              <Search size={16} className="absolute left-sm top-1/2 -translate-y-1/2 text-muted" />
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="btn-full p-sm pl-xl text-sm"
+              />
+            </div>
             <select 
-              id="history-category-filter"
-              value={categoryFilter} 
-              onChange={(e) => updateFilters(startDate, endDate, e.target.value)}
-              className="input-minimal"
-              style={{ fontWeight: 600 }}
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="p-sm text-sm font-semibold"
             >
               <option value="all">{t('history.allCategories')}</option>
-              {categories.map(cat => (
-                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              {categories.map(c => (
+                <option key={c.name} value={c.name}>{c.name}</option>
               ))}
             </select>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Scrollable Content Area - Using standard container class */}
-      <main className="container" style={{ flex: 1, overflowY: 'auto' }}>
-        <div className="flex flex-col gap-none">
-          {groupedTransactions.length === 0 ? (
-            <div className="card" style={{ textAlign: 'center', padding: '48px', color: 'var(--text-muted)', marginTop: 'var(--spacing-md)' }}>
-              {t('history.noTransactions')}
-            </div>
-          ) : (
-            groupedTransactions.map(([date, items], index) => (
-              <div key={date} style={{ marginTop: index === 0 ? 'var(--spacing-md)' : '24px' }}>
-                <h3 style={{ fontSize: '0.7rem', opacity: 0.6, marginBottom: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '4px', fontWeight: 800, letterSpacing: '0.05em' }}>
-                  {formatHeaderDate(date)}
-                </h3>
-                <div className="flex flex-col gap-sm">
-                  {items.map(t => (
-                    <div 
-                      key={t.id} 
-                      className="card flex flex-col gap-xs" 
-                      style={{ padding: '12px 16px', margin: 0, border: 'none', background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', cursor: 'pointer' }}
-                      onClick={() => {
-                        setSelectedTransaction(t);
-                        setIsEditing(false);
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-md">
-                          <CategoryIcon name={getCategoryIcon(t.category)} size={18} style={{ opacity: 0.8 }} />
-                          <span style={{ fontWeight: 700, fontSize: '0.9rem', textTransform: 'uppercase' }}>{t.category}</span>
-                        </div>
-                        <span className={t.type === 'income' ? 'text-success' : 'text-error'} style={{ fontWeight: 800, fontSize: '1.1rem' }}>
-                          {t.type === 'income' ? '+' : '-'}{t.amount.toFixed(2)}
+      <main className="container flex-1 overflow-y-auto">
+        {Object.keys(groupedTransactions).length === 0 ? (
+          <div className="card text-center p-xl text-muted">
+            {t('history.noTransactions')}
+          </div>
+        ) : (
+          Object.entries(groupedTransactions).map(([date, ts], index) => (
+            <div key={date} className={index === 0 ? '' : 'mt-lg'}>
+              <h3 className="text-xs opacity-50 mb-sm border-bottom pb-xs font-black tracking-wide uppercase">
+                {new Date(date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+              </h3>
+              <div className="flex flex-col gap-sm">
+                {ts.map(t => (
+                  <button 
+                    key={t.id} 
+                    onClick={() => setSelectedTransactionId(t.id)}
+                    className="card p-sm m-0 border-none flex flex-col items-start shadow-sm w-full text-left"
+                    style={{ textAlign: 'left' }}
+                  >
+                    <div className="flex items-center gap-sm w-full">
+                      <div className="flex-shrink-0 w-9 flex justify-center">
+                        <CategoryIcon name={getCategoryIcon(t.category)} size={18} className="opacity-80" />
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <span className="font-bold text-sm uppercase truncate block">
+                          {t.category}
                         </span>
                       </div>
-                      
-                      <div className="flex justify-end" style={{ marginTop: '-4px' }}>
-                        <span style={{ fontSize: '0.65rem', opacity: 0.5, fontWeight: 800 }}>{t.currency}</span>
+                      <div className="flex flex-col items-end flex-shrink-0 ml-sm">
+                        <span className={`${t.type === 'income' ? 'text-success' : 'text-error'} font-black text-md`}>
+                          {t.type === 'income' ? '+' : '-'}{t.amount.toFixed(2)}
+                        </span>
+                        <span className="text-xs opacity-50 font-black leading-none uppercase">
+                          {t.currency}
+                        </span>
                       </div>
-
-                      {t.note && (
-                        <div style={{ marginTop: '4px', borderTop: '1px solid #f0f0f0', paddingTop: '4px' }}>
-                          <span className="text-muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                            {t.note}
-                          </span>
-                        </div>
-                      )}
                     </div>
-                  ))}
-                </div>
+                    
+                    {t.note && (
+                      <div className="w-full text-left mt-xs pt-xs border-top">
+                        <p className="text-muted text-xs m-0 truncate w-full lh-md">
+                          {t.note}
+                        </p>
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
-            ))
-          )}
-        </div>
+            </div>
+          ))
+        )}
       </main>
 
-      {/* Unified Detail/Edit Modal */}
-      {selectedTransaction && (
-        <div style={modalStyles.overlay}>
-          <div className="container" style={modalStyles.content}>
-            <div className="flex justify-between items-center" style={{ marginBottom: '24px' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, opacity: 0.5 }}>{isEditing ? 'EDITING' : 'DETAILS'}</span>
+      {/* Transaction Details/Edit Drawer/Modal */}
+      {selectedTransactionId && selectedTransaction && (
+        <div className="modal-overlay fixed inset-0 bg-opacity-50 z-50 flex items-end">
+          <div className="bg-white w-full max-h-90dvh overflow-y-auto p-md flex flex-col slide-up shadow-lg">
+            <div className="flex justify-between items-center mb-lg">
+              <span className="text-xs font-black opacity-50">{isEditing ? 'EDITING' : 'DETAILS'}</span>
               <button 
                 onClick={() => {
-                  setSelectedTransaction(null);
+                  setSelectedTransactionId(null);
                   setIsEditing(false);
-                }} 
-                style={{ border: 'none', background: 'none', padding: '8px' }}
-                aria-label="Close"
+                }}
+                className="btn-ghost p-sm"
               >
                 <X size={24} />
               </button>
             </div>
-            
-            <div style={{ flex: 1 }}>
-              {!isEditing ? (
-                <div className="flex flex-col gap-xl">
-                  {/* Visual Header */}
-                  <div className="flex flex-col items-center gap-sm">
-                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--border-color)' }}>
+
+            <div className="flex-1">
+              {isEditing ? (
+                <TransactionForm 
+                  initialData={selectedTransaction} 
+                  onSubmit={(data) => {
+                    dispatch({ 
+                      type: 'UPDATE_TRANSACTION', 
+                      payload: { ...selectedTransaction, ...data } 
+                    });
+                    setIsEditing(false);
+                    addToast(t('common.updated'), 'success');
+                  }}
+                  onCancel={() => setIsEditing(false)}
+                />
+              ) : (
+                <div className="flex flex-col gap-lg">
+                  <div className="flex flex-col items-center gap-md">
+                    <div className="w-16 h-16 bg-accent flex items-center justify-center border-2 border-color">
                       <CategoryIcon name={getCategoryIcon(selectedTransaction.category)} size={32} />
                     </div>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0 }} className={selectedTransaction.type === 'income' ? 'text-success' : 'text-error'}>
-                      {selectedTransaction.type === 'income' ? '+' : '-'}{selectedTransaction.amount.toFixed(2)}
-                      <span style={{ fontSize: '1rem', marginLeft: '4px', opacity: 0.5 }}>{selectedTransaction.currency}</span>
-                    </h2>
-                    <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{selectedTransaction.category}</span>
+                    <div className="flex flex-col items-center">
+                      <h2 className={`${selectedTransaction.type === 'income' ? 'text-success' : 'text-error'} text-2xl font-black m-0`}>
+                        {selectedTransaction.type === 'income' ? '+' : '-'}{selectedTransaction.amount.toFixed(2)}
+                        <span className="text-md ml-xs opacity-50">{selectedTransaction.currency}</span>
+                      </h2>
+                      <span className="font-bold uppercase tracking-wide">{selectedTransaction.category}</span>
+                    </div>
                   </div>
 
-                  {/* Detail List */}
                   <div className="flex flex-col gap-md">
-                    <div className="flex items-center gap-md">
-                      <Calendar size={18} className="text-muted" />
+                    <div className="flex items-start gap-md">
+                      <Calendar size={18} className="text-muted mt-xs" />
                       <div className="flex flex-col">
-                        <label style={{ margin: 0 }}>Date & Time</label>
-                        <span style={{ fontWeight: 600 }}>{formatDateTime(selectedTransaction.date)}</span>
+                        <label className="m-0">Date & Time</label>
+                        <span className="font-semibold">{formatDateTime(selectedTransaction.date)}</span>
                       </div>
                     </div>
-                    
                     {selectedTransaction.note && (
                       <div className="flex items-start gap-md">
-                        <FileText size={18} className="text-muted" style={{ marginTop: '4px' }} />
+                        <FileText size={18} className="text-muted mt-xs" />
                         <div className="flex flex-col">
-                          <label style={{ margin: 0 }}>Note</label>
-                          <span style={{ fontWeight: 500, lineHeight: 1.4 }}>{selectedTransaction.note}</span>
+                          <label className="m-0">Note</label>
+                          <span className="font-medium lh-md">{selectedTransaction.note}</span>
                         </div>
                       </div>
                     )}
                   </div>
-                </div>
-              ) : (
-                <TransactionForm 
-                  initialData={selectedTransaction} 
-                  onSubmit={handleUpdate}
-                  submitLabel={t('history.update')}
-                />
-              )}
-            </div>
 
-            {/* Actions fixed to bottom of container */}
-            <div className="flex gap-md" style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-              {!isEditing ? (
-                <>
-                  <button className="flex-1 btn-primary" onClick={() => setIsEditing(true)} style={{ padding: '16px' }}>
-                    <Edit2 size={18} /> {t('history.editTitle')}
-                  </button>
-                  <button 
-                    className="flex-1" 
-                    onClick={() => handleDelete(selectedTransaction)}
-                    style={{ padding: '16px', border: '1px solid var(--error-color)', color: 'var(--error-color)', background: 'white' }}
-                  >
-                    <Trash2 size={18} /> DELETE
-                  </button>
-                </>
-              ) : (
-                <button 
-                  className="flex-1" 
-                  onClick={() => setIsEditing(false)}
-                  style={{ padding: '16px', background: 'white', border: '1px solid #999' }}
-                >
-                  {t('common.cancel')}
-                </button>
+                  <div className="flex gap-md mt-lg pt-md border-top">
+                    <button className="flex-1 btn-primary p-md" onClick={() => setIsEditing(true)}>
+                      <Edit2 size={18} /> {t('history.editTitle')}
+                    </button>
+                    <button 
+                      className="p-md bg-white border-error text-error"
+                      onClick={handleDelete}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
+            
+            {!isEditing && (
+              <button 
+                className="mt-md p-md bg-white border-muted btn-full"
+                onClick={() => setSelectedTransactionId(null)}
+              >
+                {t('common.cancel')}
+              </button>
+            )}
           </div>
         </div>
       )}
     </div>
   );
-};
-
-const modalStyles = {
-  overlay: {
-    position: 'fixed' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'white',
-    zIndex: 200,
-    display: 'flex',
-    flexDirection: 'column' as const,
-  },
-  content: {
-    width: '100%',
-    height: '100%',
-    margin: '0 auto',
-    display: 'flex',
-    flexDirection: 'column' as const,
-  }
 };
 
 export default History;

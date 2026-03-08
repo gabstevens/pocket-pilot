@@ -26,9 +26,13 @@ const AddTransaction: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <h1>{t('add.title')}</h1>
-      <TransactionForm onSubmit={handleSubmit} />
+    <div className="flex flex-col h-full w-full overflow-hidden">
+      <header className="p-sm border-bottom bg-white flex-shrink-0">
+        <h1>{t('add.title')}</h1>
+      </header>
+      <main className="container flex-1 overflow-y-auto">
+        <TransactionForm onSubmit={handleSubmit} />
+      </main>
     </div>
   );
 };

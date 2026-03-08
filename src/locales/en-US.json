@@ -60,7 +60,7 @@
     "rateHelp": "How much of this currency equals 1 {{base}}?",
     "dataManagement": "Data Management",
     "exportHelp": "Select a date range to export your data to CSV.",
-    "export": "Export Transactions",
+    "export": "Export CSV",
     "importHelp": "Import transactions from a CSV file. The file should match the export format.",
     "importWarning": "WARNING: Importing data may cause duplicates if the same transactions already exist. Transactions with matching IDs will be updated.",
     "import": "Import CSV",

@@ -1,7 +1,30 @@
 import React from 'react';
 import { PlusSquare, BarChart3, List, Settings } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+interface NavItemProps {
+  to: string;
+  id: string;
+  icon: LucideIcon;
+  label: string;
+  activeTab: string;
+  onNavigate: (to: string) => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ to, id, icon: Icon, label, activeTab, onNavigate }) => {
+  const isActive = activeTab === id;
+  return (
+    <button 
+      onClick={() => onNavigate(to)}
+      className={`nav-tab ${isActive ? 'nav-tab-active' : ''}`}
+    >
+      <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+      <span className={`nav-label ${isActive ? 'nav-label-active' : ''}`}>{label}</span>
+    </button>
+  );
+};
 
 const BottomNavigation: React.FC = () => {
   const { t } = useTransactions();
@@ -11,79 +34,13 @@ const BottomNavigation: React.FC = () => {
   const activeTab = location.pathname.substring(1) || 'add';
 
   return (
-    <nav style={styles.nav}>
-      <button 
-        onClick={() => navigate('/add')}
-        style={{ 
-          ...styles.tab, 
-          color: activeTab === 'add' ? 'var(--primary-color)' : 'var(--text-muted)'
-        }}
-      >
-        <PlusSquare size={24} strokeWidth={activeTab === 'add' ? 2.5 : 2} />
-        <span style={{ ...styles.label, fontWeight: activeTab === 'add' ? 700 : 500 }}>{t('nav.add')}</span>
-      </button>
-      <button 
-        onClick={() => navigate('/stats')}
-        style={{ 
-          ...styles.tab, 
-          color: activeTab === 'stats' ? 'var(--primary-color)' : 'var(--text-muted)'
-        }}
-      >
-        <BarChart3 size={24} strokeWidth={activeTab === 'stats' ? 2.5 : 2} />
-        <span style={{ ...styles.label, fontWeight: activeTab === 'stats' ? 700 : 500 }}>{t('nav.stats')}</span>
-      </button>
-      <button 
-        onClick={() => navigate('/history')}
-        style={{ 
-          ...styles.tab, 
-          color: activeTab === 'history' ? 'var(--primary-color)' : 'var(--text-muted)'
-        }}
-      >
-        <List size={24} strokeWidth={activeTab === 'history' ? 2.5 : 2} />
-        <span style={{ ...styles.label, fontWeight: activeTab === 'history' ? 700 : 500 }}>{t('nav.history')}</span>
-      </button>
-      <button 
-        onClick={() => navigate('/settings')}
-        style={{ 
-          ...styles.tab, 
-          color: activeTab === 'settings' ? 'var(--primary-color)' : 'var(--text-muted)'
-        }}
-      >
-        <Settings size={24} strokeWidth={activeTab === 'settings' ? 2.5 : 2} />
-        <span style={{ ...styles.label, fontWeight: activeTab === 'settings' ? 700 : 500 }}>{t('nav.settings')}</span>
-      </button>
+    <nav className="bottom-nav">
+      <NavItem to="/add" id="add" icon={PlusSquare} label={t('nav.add')} activeTab={activeTab} onNavigate={navigate} />
+      <NavItem to="/stats" id="stats" icon={BarChart3} label={t('nav.stats')} activeTab={activeTab} onNavigate={navigate} />
+      <NavItem to="/history" id="history" icon={List} label={t('nav.history')} activeTab={activeTab} onNavigate={navigate} />
+      <NavItem to="/settings" id="settings" icon={Settings} label={t('nav.settings')} activeTab={activeTab} onNavigate={navigate} />
     </nav>
   );
-};
-
-const styles = {
-  nav: {
-    paddingBottom: 'env(safe-area-inset-bottom)',
-    minHeight: 'calc(var(--nav-height) + env(safe-area-inset-bottom))',
-    backgroundColor: 'var(--bg-color)',
-    borderTop: '1px solid var(--border-color)',
-    display: 'flex',
-    justifyContent: 'space-around',
-    zIndex: 100,
-    width: '100%',
-    flexShrink: 0,
-  },
-  tab: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    border: 'none',
-    padding: 0,
-    gap: '4px',
-    height: '100%',
-    cursor: 'pointer',
-    background: 'none',
-  },
-  label: {
-    fontSize: 'clamp(8px, 2.5vw, 10px)',
-  }
 };
 
 export default BottomNavigation;

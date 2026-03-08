@@ -15,6 +15,7 @@ const getCurrentLocalISO = () => {
 interface TransactionFormProps {
   initialData?: Partial<Transaction>;
   onSubmit?: (data: Partial<Transaction>) => void;
+  onCancel?: () => void;
   readOnly?: boolean;
   submitLabel?: string;
 }
@@ -22,6 +23,7 @@ interface TransactionFormProps {
 const TransactionForm: React.FC<TransactionFormProps> = ({ 
   initialData, 
   onSubmit, 
+  onCancel,
   readOnly = false,
   submitLabel 
 }) => {
@@ -117,27 +119,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-none" style={{ width: '100%' }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-none btn-full">
         <div className="form-group">
           <label htmlFor={`${idPrefix}-amount`}>{t('add.amount')}</label>
-          <div className="flex items-center" style={{ borderBottom: '2px solid #333' }}>
+          <div className="flex items-center border-bottom-strong">
             <button 
               type="button"
               disabled={readOnly}
               onClick={() => setType(type === 'expense' ? 'income' : 'expense')}
               title={type === 'expense' ? t('add.expense') : t('add.income')}
-              style={{
-                width: isCondensed ? '36px' : '44px',
-                height: isCondensed ? '36px' : '44px',
-                padding: 0,
-                border: 'none',
-                background: type === 'expense' ? 'var(--error-color)' : 'var(--success-color)',
-                color: 'white',
-                borderRadius: '4px',
-                flexShrink: 0,
-                marginRight: '8px',
-                marginBottom: '2px'
-              }}
+              className={`btn-type-toggle justify-center mr-sm ${isCondensed ? 'btn-type-toggle-condensed' : ''} ${type === 'expense' ? 'bg-expense' : 'bg-income'}`}
             >
               {type === 'expense' ? <Minus size={isCondensed ? 18 : 22} strokeWidth={3} /> : <Plus size={isCondensed ? 18 : 22} strokeWidth={3} />}
             </button>
@@ -152,17 +143,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               required
               readOnly={readOnly}
               autoFocus={!readOnly}
-              style={{ 
-                fontSize: isCondensed ? '1.5rem' : '2rem', 
-                fontWeight: 700, 
-                border: 'none', 
-                borderRadius: 0, 
-                padding: '4px 0',
-                color: 'var(--text-color)',
-                background: 'transparent',
-                flex: 1,
-                minWidth: 0
-              }}
+              className={`input-amount ${isCondensed ? 'input-amount-condensed' : ''}`}
             />
             <select 
               id={`${idPrefix}-currency`}
@@ -170,17 +151,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               value={currency} 
               disabled={readOnly}
               onChange={(e) => setCurrency(e.target.value)}
-              style={{ 
-                width: 'auto', 
-                border: 'none', 
-                fontSize: isCondensed ? '0.9rem' : '1rem', 
-                fontWeight: 700, 
-                padding: '4px 8px', 
-                background: 'var(--accent-color)', 
-                borderRadius: 'var(--radius-sm)',
-                marginLeft: '8px',
-                flexShrink: 0
-              }}
+              className="input-currency-select"
             >
               {COMMON_CURRENCIES.map(c => (
                 <option key={c} value={c}>{c}</option>
@@ -189,26 +160,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           </div>
         </div>
 
-        <div className="form-group" style={{ marginTop: isCondensed ? '4px' : 'var(--spacing-md)' }}>
+        <div className={`form-group ${isCondensed ? 'mt-xs' : 'mt-md'}`}>
           <label htmlFor={`${idPrefix}-category`}>{t('add.category')} ({category})</label>
           <div className="flex flex-col gap-sm">
             {!readOnly && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              <div className="category-grid">
                 {topCategories.map(cat => (
                   <button
                     key={cat.name}
                     type="button"
                     onClick={() => setCategory(cat.name)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: isCondensed ? '10px 4px' : '14px 4px',
-                      background: category === cat.name ? 'var(--text-color)' : 'white',
-                      color: category === cat.name ? 'white' : 'var(--text-color)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: 'var(--radius-sm)',
-                    }}
+                    aria-label={cat.name}
+                    className={`category-btn ${isCondensed ? 'category-btn-condensed' : ''} ${category === cat.name ? 'category-btn-active' : ''}`}
                   >
                     <CategoryIcon name={cat.icon} size={isCondensed ? 18 : 20} />
                   </button>
@@ -216,13 +179,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               </div>
             )}
 
-            <div className="flex gap-sm">
+            <div className="flex gap-sm items-stretch">
               <select 
                 id={`${idPrefix}-category`}
                 value={category} 
                 disabled={readOnly}
                 onChange={(e) => setCategory(e.target.value)} 
-                style={{ flex: 1, padding: isCondensed ? '8px' : '10px' }}
+                className={`flex-1 p-${isCondensed ? 'sm' : 'md'}`}
               >
                 {categories.map(cat => (
                   <option key={cat.name} value={cat.name}>{cat.name}</option>
@@ -232,7 +195,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 <button 
                   type="button" 
                   onClick={() => setShowAddCategory(true)}
-                  style={{ width: isCondensed ? '40px' : '44px', padding: 0 }}
+                  className={`p-0 justify-center ${isCondensed ? 'w-12' : 'w-14'}`}
                   aria-label="Add new category"
                 >
                   +
@@ -250,7 +213,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             value={date} 
             readOnly={readOnly}
             onChange={(e) => setDate(e.target.value)}
-            style={{ padding: isCondensed ? '8px' : '10px' }}
+            className={`p-${isCondensed ? 'sm' : 'md'}`}
           />
         </div>
 
@@ -263,26 +226,33 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             readOnly={readOnly}
             onChange={(e) => setNote(e.target.value)}
             placeholder={t('add.notePlaceholder')}
-            style={{ padding: isCondensed ? '8px' : '10px' }}
+            className={`p-${isCondensed ? 'sm' : 'md'}`}
           />
         </div>
 
         {!readOnly && (
-          <button 
-            type="submit" 
-            className="btn-primary"
-            disabled={!isValid}
-            style={{ 
-              padding: isCondensed ? '12px' : '16px', 
-              borderRadius: 'var(--radius-md)', 
-              fontSize: '1rem', 
-              marginTop: isCondensed ? '0' : 'var(--spacing-sm)',
-              opacity: isValid ? 1 : 0.5,
-              cursor: isValid ? 'pointer' : 'default'
-            }}
-          >
-            {submitLabel || t('add.submit')}
-          </button>
+          <div className="flex gap-md mt-sm">
+            {onCancel && (
+              <button 
+                type="button" 
+                className={`flex-1 bg-white justify-center ${isCondensed ? 'p-sm' : 'p-md'}`}
+                onClick={onCancel}
+              >
+                {t('common.cancel')}
+              </button>
+            )}
+            <button 
+              type="submit" 
+              className={`btn-primary flex-1 justify-center ${isCondensed ? 'p-sm' : 'p-md'}`}
+              disabled={!isValid}
+              style={{ 
+                opacity: isValid ? 1 : 0.5,
+                cursor: isValid ? 'pointer' : 'default'
+              }}
+            >
+              {submitLabel || t('add.submit')}
+            </button>
+          </div>
         )}
       </form>
 

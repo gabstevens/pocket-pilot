@@ -8,18 +8,19 @@ const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div style={styles.container}>
+    <div className="toast-container">
       {toasts.map(toast => (
-        <div key={toast.id} style={{ ...styles.toast, ...styles[toast.type] }}>
+        <div key={toast.id} className={`toast toast-${toast.type}`}>
           {toast.type === 'success' && <CheckCircle size={18} />}
           {toast.type === 'error' && <AlertCircle size={18} />}
           {toast.type === 'info' && <Info size={18} />}
           
-          <span style={{ flex: 1, fontSize: '0.9rem', fontWeight: 500 }}>{toast.message}</span>
+          <span className="flex-1 text-sm font-medium">{toast.message}</span>
           
           <button 
             onClick={() => dispatch({ type: 'REMOVE_TOAST', payload: toast.id })}
-            style={styles.closeBtn}
+            className="toast-close"
+            aria-label="Close toast"
           >
             <X size={14} />
           </button>
@@ -27,47 +28,6 @@ const ToastContainer: React.FC = () => {
       ))}
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    position: 'fixed',
-    top: 'calc(20px + var(--safe-area-top))',
-    left: '20px',
-    right: '20px',
-    zIndex: 1000,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    pointerEvents: 'none'
-  },
-  toast: {
-    pointerEvents: 'auto',
-    padding: '12px 16px',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    color: 'white',
-    animation: 'slideIn 0.3s ease-out'
-  },
-  success: {
-    background: '#2e7d32',
-  },
-  error: {
-    background: '#d32f2f',
-  },
-  info: {
-    background: '#1a1a1a',
-  },
-  closeBtn: {
-    background: 'none',
-    border: 'none',
-    color: 'rgba(255,255,255,0.7)',
-    padding: '4px',
-    cursor: 'pointer'
-  }
 };
 
 export default ToastContainer;

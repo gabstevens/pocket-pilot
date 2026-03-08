@@ -45,46 +45,49 @@ const Dashboard: React.FC = () => {
   }, [filteredTransactions, baseCurrency, exchangeRates]);
 
   return (
-    <div className="container">
-      <h1>{t('dashboard.title')}</h1>
+    <div className="flex flex-col h-full w-full overflow-hidden">
+      <header className="p-sm border-bottom bg-white flex-shrink-0">
+        <h1>{t('dashboard.title')}</h1>
+        <DateRangePicker 
+          startDate={startDate} 
+          endDate={endDate} 
+          onChange={(start, end) => {
+            setStartDate(start);
+            setEndDate(end);
+          }} 
+        />
+      </header>
 
-      <DateRangePicker 
-        startDate={startDate} 
-        endDate={endDate} 
-        onChange={(start, end) => {
-          setStartDate(start);
-          setEndDate(end);
-        }} 
-      />
+      <main className="container flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-md">
+          <div className="card-dark flex flex-col items-center p-xl">
+            <span className="text-sm opacity-80 font-bold tracking-wide uppercase">{t('dashboard.balance')} ({baseCurrency})</span>
+            <h2 className="text-2xl font-black m-0 mt-xs">
+              {summary.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </h2>
+          </div>
 
-      <div className="flex flex-col gap-md">
-        <div className="card flex flex-col items-center" style={{ border: 'none', background: 'var(--text-color)', color: 'white', padding: '32px' }}>
-          <span style={{ fontSize: '0.8rem', opacity: 0.8, fontWeight: 700, letterSpacing: '0.05em' }}>{t('dashboard.balance')} ({baseCurrency})</span>
-          <h2 style={{ fontSize: '2.5rem', margin: '4px 0', fontWeight: 800 }}>
-            {summary.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </h2>
+          <div className="flex gap-md">
+            <div className="card flex-1 flex flex-col items-center p-md">
+              <span className="text-xs text-muted font-black uppercase">{t('dashboard.income')}</span>
+              <span className="text-success text-lg font-bold">+{summary.income.toFixed(2)}</span>
+            </div>
+            <div className="card flex-1 flex flex-col items-center p-md">
+              <span className="text-xs text-muted font-black uppercase">{t('dashboard.expense')}</span>
+              <span className="text-error text-lg font-bold">-{summary.expense.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {hasMissingRates && (
+            <div className="card-warning flex items-start gap-sm p-md">
+              <Info size={18} className="mt-xs flex-shrink-0" />
+              <span className="text-sm font-semibold">
+                Rates missing for some currencies. Using 1:1.
+              </span>
+            </div>
+          )}
         </div>
-
-        <div className="flex gap-md">
-          <div className="card flex-1 flex flex-col items-center">
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800 }}>{t('dashboard.income')}</span>
-            <span className="text-success" style={{ fontSize: '1.2rem' }}>+{summary.income.toFixed(2)}</span>
-          </div>
-          <div className="card flex-1 flex flex-col items-center">
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800 }}>{t('dashboard.expense')}</span>
-            <span className="text-error" style={{ fontSize: '1.2rem' }}>-{summary.expense.toFixed(2)}</span>
-          </div>
-        </div>
-
-        {hasMissingRates && (
-          <div className="card flex items-start gap-sm" style={{ background: '#fff4e5', border: '1px solid #ffa117', color: '#663c00' }}>
-            <Info size={18} style={{ marginTop: '2px', flexShrink: 0 }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>
-              Rates missing for some currencies. Using 1:1.
-            </span>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 };

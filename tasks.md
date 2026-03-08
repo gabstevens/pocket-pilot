@@ -34,6 +34,8 @@
 - [x] Implement core E2E tests with Playwright.
 - [x] Configure base path and routing for GitHub Pages deployment.
 - [x] Update PWA configuration for subfolder hosting.
+- [x] Standardize labels and refactor inline styles to utility classes.
+- [x] Ensure "sharp-edged" aesthetic consistency across all components.
 
 ## Phase 4: Polish & PWA
 - [x] Fix iOS PWA safe area and keyboard layout issues.

@@ -12,7 +12,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ startDate, endDate, o
   const id = useId();
 
   return (
-    <div className="form-group">
+    <div className="form-group mb-sm">
       <label htmlFor={`${id}-start`}>{t('dashboard.dateRange')}</label>
       <div className="flex items-center gap-sm flex-wrap">
         <input 
@@ -20,18 +20,16 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ startDate, endDate, o
           type="date" 
           value={startDate} 
           onChange={(e) => onChange(e.target.value, endDate)} 
-          className="flex-1 input-minimal"
-          style={{ padding: '8px 4px' }}
+          className="flex-1 input-minimal p-sm font-semibold"
           aria-label="Start Date"
         />
-        <span className="text-muted" style={{ fontWeight: 700 }}>{t('dashboard.to')}</span>
+        <span className="text-muted font-bold text-xs uppercase">{t('dashboard.to')}</span>
         <input 
           id={`${id}-end`}
           type="date" 
           value={endDate} 
           onChange={(e) => onChange(startDate, e.target.value)} 
-          className="flex-1 input-minimal"
-          style={{ padding: '8px 4px' }}
+          className="flex-1 input-minimal p-sm font-semibold"
           aria-label="End Date"
         />
       </div>

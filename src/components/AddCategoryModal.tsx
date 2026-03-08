@@ -1,6 +1,7 @@
 import React, { useState, useId } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import CategoryIcon from './CategoryIcon';
+import { X } from 'lucide-react';
 
 const AVAILABLE_ICONS = [
   'Coffee', 'Bus', 'Wallet', 'Building', 'Gamepad2', 'Stethoscope', 
@@ -18,7 +19,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
   const { dispatch, t } = useTransactions();
   const id = useId();
   const [newCategory, setNewCategory] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('MoreHorizontal');
+  const [selectedIcon, setSelectedIcon] = useState('Tag');
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -32,14 +33,16 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
   };
 
   return (
-    <div style={styles.overlay}>
-      <div className="card" style={styles.content}>
-        <div className="flex justify-between items-center" style={{ marginBottom: '16px' }}>
+    <div className="dialog-overlay z-50">
+      <div className="card dialog-content max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-md">
           <h2>{t('add.addCategory')}</h2>
-          <button type="button" onClick={onClose} style={{ border: 'none', background: 'none', padding: '8px' }} aria-label="Close">X</button>
+          <button type="button" onClick={onClose} className="btn-ghost p-sm" aria-label="Close">
+            <X size={20} />
+          </button>
         </div>
 
-        <div className="form-group" style={{ marginBottom: 'var(--spacing-md)' }}>
+        <div className="form-group mb-md">
           <label htmlFor={`${id}-name`}>{t('add.categoryName')}</label>
           <input 
             id={`${id}-name`}
@@ -48,34 +51,20 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
             value={newCategory} 
             onChange={(e) => setNewCategory(e.target.value)}
             autoFocus
+            className="btn-full"
           />
         </div>
 
         <div className="form-group">
           <label>Icon</label>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(44px, 1fr))', 
-            gap: '8px',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            padding: '4px',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-sm)'
-          }}>
+          <div className="icon-grid border-color">
             {AVAILABLE_ICONS.map((iconName) => (
               <button 
                 key={iconName}
                 type="button"
                 onClick={() => setSelectedIcon(iconName)}
                 aria-label={`Select ${iconName} icon`}
-                style={{ 
-                  padding: '10px 4px', 
-                  background: selectedIcon === iconName ? 'var(--text-color)' : 'transparent',
-                  color: selectedIcon === iconName ? 'white' : 'black',
-                  border: '1px solid transparent',
-                  borderRadius: 'var(--radius-sm)'
-                }}
+                className={`category-btn ${selectedIcon === iconName ? 'category-btn-active' : 'bg-white border-none'}`}
               >
                 <CategoryIcon name={iconName} size={20} />
               </button>
@@ -85,41 +74,14 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
 
         <button 
           type="button" 
-          className="btn-primary" 
+          className="btn-primary btn-full p-md mt-md justify-center" 
           onClick={handleAddCategory} 
-          style={{ width: '100%', padding: '14px', marginTop: 'var(--spacing-md)' }}
         >
           {t('add.addCategory')}
         </button>
       </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2500,
-    padding: '20px'
-  },
-  content: {
-    width: '100%',
-    maxWidth: '400px',
-    background: 'white',
-    padding: '24px',
-    boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-    border: 'none',
-    maxHeight: '90vh',
-    overflowY: 'auto'
-  }
 };
 
 export default AddCategoryModal;
