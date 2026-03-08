@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useMemo } from 'react';
+import { useReducer, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { Toast, Dialog } from '../types';
 import { translations } from '../locales/i18n';
@@ -40,15 +40,15 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     return result;
   }, [state.language]);
 
-  const addToast = (message: string, type: Toast['type'] = 'info') => {
+  const addToast = useCallback((message: string, type: Toast['type'] = 'info') => {
     const id = generateUUID();
     dispatch({ type: 'ADD_TOAST', payload: { message, type, id } as Toast });
     setTimeout(() => {
       dispatch({ type: 'REMOVE_TOAST', payload: id });
     }, 3000);
-  };
+  }, []);
 
-  const confirm = (dialog: Omit<Dialog, 'onConfirm'>): Promise<boolean> => {
+  const confirm = useCallback((dialog: Omit<Dialog, 'onConfirm'>): Promise<boolean> => {
     return new Promise((resolve) => {
       dispatch({ 
         type: 'OPEN_DIALOG', 
@@ -61,7 +61,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
         } 
       });
     });
-  };
+  }, []);
 
   return (
     <TransactionContext.Provider value={{ ...state, dispatch, t, addToast, confirm }}>

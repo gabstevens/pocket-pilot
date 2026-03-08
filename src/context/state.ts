@@ -1,7 +1,6 @@
-import type { AppState, Action, Toast } from '../types';
+import type { AppState, Action } from '../types';
 import { INITIAL_CATEGORIES } from '../constants';
 import { safeParse } from '../utils/storage';
-import { generateUUID } from '../utils/uuid';
 
 export const getInitialState = (): AppState => {
   return {
@@ -76,13 +75,11 @@ export function reducer(state: AppState, action: Action): AppState {
           [action.payload.currency]: action.payload.rate
         }
       };
-    case 'ADD_TOAST': {
-      const { message, type } = action.payload;
+    case 'ADD_TOAST':
       return {
         ...state,
-        toasts: [...state.toasts, { message, type, id: generateUUID() } as Toast]
+        toasts: [...state.toasts, action.payload]
       };
-    }
     case 'REMOVE_TOAST':
       return {
         ...state,

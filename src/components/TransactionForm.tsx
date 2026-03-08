@@ -30,14 +30,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const idPrefix = useId();
   
   const isNewTransaction = !initialData;
-  const sourceData = isNewTransaction ? draftTransaction : initialData;
 
-  const [amount, setAmount] = useState(sourceData?.amount?.toString() || '');
-  const [currency, setCurrency] = useState(sourceData?.currency || lastCurrency);
-  const [type, setType] = useState<TransactionType>(sourceData?.type || 'expense');
-  const [category, setCategory] = useState(sourceData?.category || 'Food');
-  const [date, setDate] = useState(sourceData?.date || getCurrentLocalISO());
-  const [note, setNote] = useState(sourceData?.note || '');
+  const [amount, setAmount] = useState(() => (initialData?.amount || draftTransaction?.amount)?.toString() || '');
+  const [currency, setCurrency] = useState(() => initialData?.currency || draftTransaction?.currency || lastCurrency);
+  const [type, setType] = useState<TransactionType>(() => initialData?.type || draftTransaction?.type || 'expense');
+  const [category, setCategory] = useState(() => initialData?.category || draftTransaction?.category || 'Food');
+  const [date, setDate] = useState(() => initialData?.date || draftTransaction?.date || getCurrentLocalISO());
+  const [note, setNote] = useState(() => initialData?.note || draftTransaction?.note || '');
   
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -74,42 +73,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     setAmount(cleaned);
   };
 
-  const handleTypeToggle = () => {
-    const newType = type === 'expense' ? 'income' : 'expense';
-    setType(newType);
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { type: newType } });
-    }
-  };
-
-  const handleCategoryChange = (newCat: string) => {
-    setCategory(newCat);
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { category: newCat } });
-    }
-  };
-
-  const handleCurrencyChange = (newCurr: string) => {
-    setCurrency(newCurr);
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { currency: newCurr } });
-    }
-  };
-
-  const handleDateChange = (newDate: string) => {
-    setDate(newDate);
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { date: newDate } });
-    }
-  };
-
-  const handleNoteChange = (newNote: string) => {
-    setNote(newNote);
-    if (isNewTransaction) {
-      dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { note: newNote } });
-    }
-  };
-
   const isCondensed = windowHeight < 700;
   const categoryRows = windowHeight < 600 ? 1 : windowHeight < 800 ? 2 : 3;
   const categoriesToShow = categoryRows * 4;
@@ -131,7 +94,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     setAmount('');
     setNote('');
     setDate(getCurrentLocalISO());
-    dispatch({ type: 'SET_DRAFT_TRANSACTION', payload: { amount: undefined, note: '', date: getCurrentLocalISO() } });
     setTimeout(() => amountRef.current?.focus(), 100);
   };
 
@@ -162,7 +124,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             <button 
               type="button"
               disabled={readOnly}
-              onClick={handleTypeToggle}
+              onClick={() => setType(type === 'expense' ? 'income' : 'expense')}
               title={type === 'expense' ? t('add.expense') : t('add.income')}
               style={{
                 width: isCondensed ? '36px' : '44px',
@@ -207,7 +169,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               aria-label="Currency"
               value={currency} 
               disabled={readOnly}
-              onChange={(e) => handleCurrencyChange(e.target.value)}
+              onChange={(e) => setCurrency(e.target.value)}
               style={{ 
                 width: 'auto', 
                 border: 'none', 
@@ -236,7 +198,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                   <button
                     key={cat.name}
                     type="button"
-                    onClick={() => handleCategoryChange(cat.name)}
+                    onClick={() => setCategory(cat.name)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -259,7 +221,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 id={`${idPrefix}-category`}
                 value={category} 
                 disabled={readOnly}
-                onChange={(e) => handleCategoryChange(e.target.value)} 
+                onChange={(e) => setCategory(e.target.value)} 
                 style={{ flex: 1, padding: isCondensed ? '8px' : '10px' }}
               >
                 {categories.map(cat => (
@@ -287,7 +249,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             type="datetime-local" 
             value={date} 
             readOnly={readOnly}
-            onChange={(e) => handleDateChange(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             style={{ padding: isCondensed ? '8px' : '10px' }}
           />
         </div>
@@ -299,7 +261,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             rows={readOnly ? 3 : (isCondensed ? 1 : 2)} 
             value={note} 
             readOnly={readOnly}
-            onChange={(e) => handleNoteChange(e.target.value)}
+            onChange={(e) => setNote(e.target.value)}
             placeholder={t('add.notePlaceholder')}
             style={{ padding: isCondensed ? '8px' : '10px' }}
           />
@@ -308,8 +270,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         {!readOnly && (
           <button 
             type="submit" 
-            disabled={!isValid}
             className="btn-primary"
+            disabled={!isValid}
             style={{ 
               padding: isCondensed ? '12px' : '16px', 
               borderRadius: 'var(--radius-md)', 
@@ -327,7 +289,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       {showAddCategory && (
         <AddCategoryModal 
           onClose={() => setShowAddCategory(false)} 
-          onSuccess={(name) => handleCategoryChange(name)} 
+          onSuccess={(name) => setCategory(name)} 
         />
       )}
     </>

@@ -52,7 +52,7 @@ export type Action =
   | { type: 'SET_LANGUAGE'; payload: string }
   | { type: 'SET_BASE_CURRENCY'; payload: string }
   | { type: 'SET_EXCHANGE_RATE'; payload: { currency: string; rate: number } }
-  | { type: 'ADD_TOAST'; payload: Omit<Toast, 'id'> }
+  | { type: 'ADD_TOAST'; payload: Toast }
   | { type: 'REMOVE_TOAST'; payload: string }
   | { type: 'OPEN_DIALOG'; payload: Dialog }
   | { type: 'CLOSE_DIALOG' }

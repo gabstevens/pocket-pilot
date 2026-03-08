@@ -8,27 +8,32 @@ test.beforeEach(async ({ page }) => {
 
 test('can add and delete a transaction', async ({ page }) => {
   // 1. Add a transaction
-  await page.fill('input[type="text"]', '123.45');
+  // The amount input is type="text" but has inputMode="decimal"
+  await page.fill('input[placeholder="0.00"]', '123.45');
   await page.fill('textarea', 'E2E Test Lunch');
-  // Use text-color button for '+' if needed, but here we default to Expense
-  await page.click('button:has-text("Add Transaction")');
+  
+  // Submit button
+  await page.click('button[type="submit"]');
 
   // Check toast (informative version)
+  // The app uses t('common.added') which is "Transaction added"
   await expect(page.locator('text=Transaction added: -123.45 USD')).toBeVisible();
 
   // 2. Go to History
-  await page.click('button:has-text("History")');
+  // Navigation buttons are in the bottom nav
+  await page.click('nav button:has-text("History")');
   await expect(page.locator('text=E2E Test Lunch')).toBeVisible();
   
-  // Use specific selector for the amount in history list to avoid toast ambiguity
-  // Or just wait for the toast to disappear, but specific is better.
+  // Check amount in history
   const historyItem = page.locator('.card').filter({ hasText: 'E2E Test Lunch' });
   await expect(historyItem.locator('text=123.45')).toBeVisible();
 
   // 3. Open details and delete
   await historyItem.click();
+  // The modal shows "DETAILS" at the top
   await expect(page.locator('text=DETAILS')).toBeVisible();
   
+  // The delete button has hardcoded text "DELETE" next to an icon
   await page.click('button:has-text("DELETE")');
   // Confirm dialog
   await page.click('button:has-text("Confirm")');
@@ -39,10 +44,11 @@ test('can add and delete a transaction', async ({ page }) => {
 });
 
 test('can switch language', async ({ page }) => {
-  await page.click('button:has-text("Settings")');
+  await page.click('nav button:has-text("Settings")');
   await page.selectOption('select', 'it-IT');
   
   // Navigation labels should change
-  await expect(page.locator('button:has-text("Aggiungi")')).toBeVisible();
-  await expect(page.locator('button:has-text("Storia")')).toBeVisible();
+  // "Add" -> "Aggiungi", "History" -> "Storia"
+  await expect(page.locator('nav button:has-text("Aggiungi")')).toBeVisible();
+  await expect(page.locator('nav button:has-text("Storia")')).toBeVisible();
 });

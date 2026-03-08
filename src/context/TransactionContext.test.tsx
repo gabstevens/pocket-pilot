@@ -94,7 +94,7 @@ describe('TransactionContext Integration', () => {
 
     // Fast-forward 3 seconds
     act(() => {
-      vi.advanceTimersByTime(3000);
+      vi.runAllTimers();
     });
     
     expect(screen.getByTestId('toast-count').textContent).toBe('0');
