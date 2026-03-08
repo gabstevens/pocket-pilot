@@ -11,7 +11,7 @@ import Dialog from './components/Dialog';
 function App() {
   return (
     <TransactionProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <div className="app">
           <Routes>
             <Route path="/" element={<Navigate to="/add" replace />} />

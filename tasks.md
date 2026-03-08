@@ -26,6 +26,15 @@
 - [x] Build the `History` page with full-screen edit modal.
 - [x] Build CSV Export/Import UI.
 
+## Infrastructure & Quality
+- [x] Configure Vitest with JSDOM for React/DOM testing.
+- [x] Establish Senior Engineering Guidelines (`GEMINI.md`).
+- [x] Fix core bugs (Toast IDs, TransactionForm validation).
+- [x] Achieve 100% logic coverage in unit tests.
+- [x] Implement core E2E tests with Playwright.
+- [x] Configure base path and routing for GitHub Pages deployment.
+- [x] Update PWA configuration for subfolder hosting.
+
 ## Phase 4: Polish & PWA
 - [ ] Add animations/transitions for a "native app" feel.
 - [ ] Finalize manifest and offline configuration.

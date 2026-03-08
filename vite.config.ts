@@ -3,9 +3,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const isProd = process.env.NODE_ENV === 'production';
+const base = isProd ? '/pocket-pilot/' : '/';
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
+  base,
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**'],
+  },
   plugins: [
     react(),
     VitePWA({
@@ -19,8 +28,8 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: base,
+        start_url: base,
         icons: [
           {
             src: 'vite.svg',
