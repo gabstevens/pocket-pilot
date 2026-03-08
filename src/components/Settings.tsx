@@ -240,7 +240,7 @@ const Settings: React.FC = () => {
                 </span>
               </div>
 
-              <label className="btn-primary" style={{ width: '100%', cursor: 'pointer' }}>
+              <label className="btn btn-primary" style={{ width: '100%' }}>
                 <Upload size={18} /> {t('settings.import')}
                 <input type="file" accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
               </label>
