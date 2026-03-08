@@ -110,6 +110,14 @@ const Settings: React.FC = () => {
 
       <main className="container flex-1 overflow-y-auto">
         <div className="flex flex-col gap-md">
+          {/* Privacy Note */}
+          <div className="card-accent flex items-center gap-md p-md">
+            <ShieldCheck size={24} className="text-success" />
+            <span className="text-sm font-semibold">
+              {t('settings.dataPrivacy')}
+            </span>
+          </div>
+
           {/* Language */}
           <div className="form-group">
             <label htmlFor={`${idPrefix}-lang`} className="flex items-center gap-sm">
@@ -232,14 +240,6 @@ const Settings: React.FC = () => {
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Privacy Note */}
-          <div className="card-accent flex items-center gap-md p-md mt-0">
-            <ShieldCheck size={24} className="text-success" />
-            <span className="text-sm font-semibold">
-              {t('settings.dataPrivacy')}
-            </span>
           </div>
         </div>
       </main>
