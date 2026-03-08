@@ -1,12 +1,13 @@
 import React, { useState, useId } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download } from 'lucide-react';
+import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download, Upload, AlertTriangle } from 'lucide-react';
 import { COMMON_CURRENCIES } from '../constants';
 import DateRangePicker from './DateRangePicker';
-import { exportTransactionsToCSV, downloadCSV } from '../utils/csv';
+import { exportTransactionsToCSV, downloadCSV, parseCSV } from '../utils/csv';
+import type { Transaction } from '../types';
 
 const Settings: React.FC = () => {
-  const { language, baseCurrency, exchangeRates, transactions, dispatch, t, addToast } = useTransactions();
+  const { language, baseCurrency, exchangeRates, transactions, dispatch, t, addToast, confirm } = useTransactions();
   const idPrefix = useId();
 
   const now = new Date();
@@ -65,6 +66,42 @@ const Settings: React.FC = () => {
     const csv = exportTransactionsToCSV(filtered);
     downloadCSV(csv, `pocket-pilot-export-${startDate}-to-${endDate}.csv`);
     addToast(t('common.exported'), 'success');
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const parsed = await parseCSV(file);
+        const importedTransactions = parsed.map(t => ({
+          ...t,
+          id: t.id || crypto.randomUUID(),
+          createdAt: Date.now(),
+          currency: t.currency || baseCurrency
+        })) as Transaction[];
+        
+        const confirmedResult = await confirm({
+          title: t('settings.import'),
+          message: t('dashboard.importConfirm', { count: importedTransactions.length })
+        });
+
+        if (confirmedResult) {
+          const newTransactions = [...transactions];
+          importedTransactions.forEach(imported => {
+            const index = newTransactions.findIndex(t => t.id === imported.id);
+            if (index > -1) newTransactions[index] = imported;
+            else newTransactions.push(imported);
+          });
+          dispatch({ type: 'SET_TRANSACTIONS', payload: newTransactions });
+          addToast(t('common.imported'), 'success');
+        }
+      } catch {
+        addToast(t('common.error'), 'error');
+      } finally {
+        // Reset file input
+        e.target.value = '';
+      }
+    }
   };
 
   return (
@@ -156,32 +193,58 @@ const Settings: React.FC = () => {
           </div>
         </div>
 
-        {/* Data Management & Export */}
+        {/* Data Management */}
         <div className="form-group">
           <label className="flex items-center gap-sm">
             <Database size={16} /> {t('settings.dataManagement')}
           </label>
-          <div className="card" style={{ padding: '16px' }}>
-            <p className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '16px', fontWeight: 600 }}>
-              {t('settings.exportHelp')}
-            </p>
-            
-            <DateRangePicker 
-              startDate={startDate} 
-              endDate={endDate} 
-              onChange={(start, end) => {
-                setStartDate(start);
-                setEndDate(end);
-              }} 
-            />
+          <div className="card flex flex-col gap-md" style={{ padding: '16px' }}>
+            {/* Export Section */}
+            <div className="flex flex-col gap-sm">
+              <h4 style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase' }}>{t('dashboard.export')}</h4>
+              <p className="text-muted" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                {t('settings.exportHelp')}
+              </p>
+              
+              <DateRangePicker 
+                startDate={startDate} 
+                endDate={endDate} 
+                onChange={(start, end) => {
+                  setStartDate(start);
+                  setEndDate(end);
+                }} 
+              />
 
-            <button 
-              onClick={handleExport} 
-              className="btn-primary" 
-              style={{ width: '100%', marginTop: '8px' }}
-            >
-              <Download size={18} /> {t('settings.export')}
-            </button>
+              <button 
+                onClick={handleExport} 
+                className="btn-primary" 
+                style={{ width: '100%' }}
+              >
+                <Download size={18} /> {t('settings.export')}
+              </button>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }} />
+
+            {/* Import Section */}
+            <div className="flex flex-col gap-sm">
+              <h4 style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase' }}>{t('settings.import')}</h4>
+              <p className="text-muted" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                {t('settings.importHelp')}
+              </p>
+              
+              <div className="card flex items-start gap-sm" style={{ background: '#fff4e5', border: '1px solid #ffa117', color: '#663c00', padding: '12px', boxShadow: 'none' }}>
+                <AlertTriangle size={18} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                  {t('settings.importWarning')}
+                </span>
+              </div>
+
+              <label className="btn-primary" style={{ width: '100%', cursor: 'pointer' }}>
+                <Upload size={18} /> {t('settings.import')}
+                <input type="file" accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
+              </label>
+            </div>
           </div>
         </div>
 

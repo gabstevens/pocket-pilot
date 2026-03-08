@@ -1,27 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { parseCSV } from '../utils/csv';
-import { Upload, Info } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { Info } from 'lucide-react';
 import DateRangePicker from './DateRangePicker';
-import type { Transaction } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { transactions, exchangeRates, baseCurrency, dispatch, t, addToast, confirm } = useTransactions();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { transactions, exchangeRates, baseCurrency, t } = useTransactions();
   
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
   
-  const [startDate, setStartDate] = useState(searchParams.get('start') || firstDay);
-  const [endDate, setEndDate] = useState(searchParams.get('end') || lastDay);
-
-  const updateRange = (start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
-    setSearchParams({ start, end });
-  };
+  const [startDate, setStartDate] = useState(firstDay);
+  const [endDate, setEndDate] = useState(lastDay);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
@@ -48,66 +38,24 @@ const Dashboard: React.FC = () => {
     );
   }, [filteredTransactions, baseCurrency, exchangeRates]);
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const parsed = await parseCSV(file);
-        const importedTransactions = parsed.map(t => ({
-          ...t,
-          id: t.id || crypto.randomUUID(),
-          createdAt: Date.now(),
-          currency: t.currency || baseCurrency
-        })) as Transaction[];
-        
-        const confirmedResult = await confirm({
-          title: t('dashboard.import'),
-          message: t('dashboard.importConfirm', { count: importedTransactions.length })
-        });
-
-        if (confirmedResult) {
-          const newTransactions = [...transactions];
-          importedTransactions.forEach(imported => {
-            const index = newTransactions.findIndex(t => t.id === imported.id);
-            if (index > -1) newTransactions[index] = imported;
-            else newTransactions.push(imported);
-          });
-          dispatch({ type: 'SET_TRANSACTIONS', payload: newTransactions });
-          addToast(t('common.imported'), 'success');
-        }
-      } catch {
-        addToast(t('common.error'), 'error');
-      }
-    }
-  };
-
   const hasMissingRates = useMemo(() => {
     const usedCurrencies = new Set(filteredTransactions.map(t => t.currency));
     usedCurrencies.delete(baseCurrency);
     return Array.from(usedCurrencies).some(c => !exchangeRates[c]);
   }, [filteredTransactions, baseCurrency, exchangeRates]);
 
-  const buttonStyle: React.CSSProperties = {
-    background: 'white',
-    border: '1px solid #999',
-    padding: '12px 8px',
-    borderRadius: 'var(--radius-sm)',
-    fontSize: '0.85rem',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    cursor: 'pointer',
-    width: '100%'
-  };
-
   return (
     <div className="container">
       <h1>{t('dashboard.title')}</h1>
 
-      <DateRangePicker startDate={startDate} endDate={endDate} onChange={updateRange} />
+      <DateRangePicker 
+        startDate={startDate} 
+        endDate={endDate} 
+        onChange={(start, end) => {
+          setStartDate(start);
+          setEndDate(end);
+        }} 
+      />
 
       <div className="flex flex-col gap-md">
         <div className="card flex flex-col items-center" style={{ border: 'none', background: 'var(--text-color)', color: 'white', padding: '32px' }}>
@@ -136,14 +84,6 @@ const Dashboard: React.FC = () => {
             </span>
           </div>
         )}
-      </div>
-
-      <div style={{ marginTop: 'var(--spacing-xl)' }}>
-        <h3>{t('dashboard.management')}</h3>
-        <label style={buttonStyle}>
-          <Upload size={18} /> {t('dashboard.import')}
-          <input type="file" accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
-        </label>
       </div>
     </div>
   );
