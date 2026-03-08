@@ -58,6 +58,9 @@
     "baseCurrency": "Valuta Principale",
     "exchangeRates": "Tassi di Cambio",
     "rateHelp": "Quanto di questa valuta equivale a 1 {{base}}?",
+    "dataManagement": "Gestione Dati",
+    "exportHelp": "Seleziona un intervallo di date per esportare i tuoi dati in CSV.",
+    "export": "Esporta Transazioni",
     "dataPrivacy": "Tutti i dati sono memorizzati localmente sul tuo dispositivo."
   }
 }

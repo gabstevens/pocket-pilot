@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { exportTransactionsToCSV, downloadCSV, parseCSV } from '../utils/csv';
-import { Download, Upload, Info } from 'lucide-react';
+import { parseCSV } from '../utils/csv';
+import { Upload, Info } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import DateRangePicker from './DateRangePicker';
 import type { Transaction } from '../types';
@@ -47,12 +47,6 @@ const Dashboard: React.FC = () => {
       { income: 0, expense: 0, balance: 0 }
     );
   }, [filteredTransactions, baseCurrency, exchangeRates]);
-
-  const handleExport = () => {
-    const csv = exportTransactionsToCSV(transactions);
-    downloadCSV(csv, `pocket-pilot-backup-${new Date().toISOString().split('T')[0]}.csv`);
-    addToast(t('common.exported'), 'success');
-  };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -146,15 +140,10 @@ const Dashboard: React.FC = () => {
 
       <div style={{ marginTop: 'var(--spacing-xl)' }}>
         <h3>{t('dashboard.management')}</h3>
-        <div className="flex gap-md">
-          <button onClick={handleExport} className="flex-1" style={buttonStyle}>
-            <Download size={18} /> {t('dashboard.export')}
-          </button>
-          <label className="flex-1" style={buttonStyle}>
-            <Upload size={18} /> {t('dashboard.import')}
-            <input type="file" accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
-          </label>
-        </div>
+        <label style={buttonStyle}>
+          <Upload size={18} /> {t('dashboard.import')}
+          <input type="file" accept=".csv" onChange={handleImport} style={{ display: 'none' }} />
+        </label>
       </div>
     </div>
   );

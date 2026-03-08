@@ -58,6 +58,9 @@
     "baseCurrency": "Base Currency (Home)",
     "exchangeRates": "Exchange Rates",
     "rateHelp": "How much of this currency equals 1 {{base}}?",
+    "dataManagement": "Data Management",
+    "exportHelp": "Select a date range to export your data to CSV.",
+    "export": "Export Transactions",
     "dataPrivacy": "All data is stored locally on your device."
   }
 }

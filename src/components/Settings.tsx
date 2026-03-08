@@ -1,11 +1,21 @@
 import React, { useState, useId } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { Globe, ShieldCheck, Landmark, ArrowRightLeft } from 'lucide-react';
+import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download } from 'lucide-react';
 import { COMMON_CURRENCIES } from '../constants';
+import DateRangePicker from './DateRangePicker';
+import { exportTransactionsToCSV, downloadCSV } from '../utils/csv';
 
 const Settings: React.FC = () => {
-  const { language, baseCurrency, exchangeRates, dispatch, t } = useTransactions();
+  const { language, baseCurrency, exchangeRates, transactions, dispatch, t, addToast } = useTransactions();
   const idPrefix = useId();
+
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
+  const [startDate, setStartDate] = useState(firstDay);
+  const [endDate, setEndDate] = useState(lastDay);
+
   const [selectedCurrency, setSelectedCurrency] = useState(
     COMMON_CURRENCIES.find(c => c !== baseCurrency) || 'EUR'
   );
@@ -39,6 +49,22 @@ const Settings: React.FC = () => {
         payload: { currency: selectedCurrency, rate: 0 } 
       });
     }
+  };
+
+  const handleExport = () => {
+    const filtered = transactions.filter(t => {
+      const dateOnly = t.date.split('T')[0];
+      return dateOnly >= startDate && dateOnly <= endDate;
+    });
+
+    if (filtered.length === 0) {
+      addToast(t('history.noTransactions'), 'info');
+      return;
+    }
+
+    const csv = exportTransactionsToCSV(filtered);
+    downloadCSV(csv, `pocket-pilot-export-${startDate}-to-${endDate}.csv`);
+    addToast(t('common.exported'), 'success');
   };
 
   return (
@@ -127,6 +153,35 @@ const Settings: React.FC = () => {
                 {baseCurrency}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Data Management & Export */}
+        <div className="form-group">
+          <label className="flex items-center gap-sm">
+            <Database size={16} /> {t('settings.dataManagement')}
+          </label>
+          <div className="card" style={{ padding: '16px' }}>
+            <p className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '16px', fontWeight: 600 }}>
+              {t('settings.exportHelp')}
+            </p>
+            
+            <DateRangePicker 
+              startDate={startDate} 
+              endDate={endDate} 
+              onChange={(start, end) => {
+                setStartDate(start);
+                setEndDate(end);
+              }} 
+            />
+
+            <button 
+              onClick={handleExport} 
+              className="btn-primary" 
+              style={{ width: '100%', marginTop: '8px' }}
+            >
+              <Download size={18} /> {t('settings.export')}
+            </button>
           </div>
         </div>
 
