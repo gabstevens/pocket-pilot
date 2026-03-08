@@ -36,6 +36,7 @@
 - [x] Update PWA configuration for subfolder hosting.
 
 ## Phase 4: Polish & PWA
+- [x] Fix iOS PWA safe area and keyboard layout issues.
 - [ ] Add animations/transitions for a "native app" feel.
 - [ ] Finalize manifest and offline configuration.
 - [ ] Test on mobile devices (simulated and/or actual).

@@ -58,7 +58,8 @@ const BottomNavigation: React.FC = () => {
 
 const styles = {
   nav: {
-    height: 'var(--nav-height)',
+    paddingBottom: 'env(safe-area-inset-bottom)',
+    minHeight: 'calc(var(--nav-height) + env(safe-area-inset-bottom))',
     backgroundColor: 'var(--bg-color)',
     borderTop: '1px solid var(--border-color)',
     display: 'flex',

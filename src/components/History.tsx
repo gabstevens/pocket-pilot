@@ -97,7 +97,15 @@ const History: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
       {/* Sticky Header & Filters - Outside the scrollable container */}
-      <div style={{ padding: 'var(--spacing-sm)', background: '#fafafa', borderBottom: '1px solid var(--border-color)', zIndex: 10 }}>
+      <div style={{ 
+        padding: 'var(--spacing-sm)', 
+        paddingTop: 'calc(var(--spacing-sm) + var(--safe-area-top))',
+        paddingLeft: 'calc(var(--spacing-sm) + var(--safe-area-left))',
+        paddingRight: 'calc(var(--spacing-sm) + var(--safe-area-right))',
+        background: '#fafafa', 
+        borderBottom: '1px solid var(--border-color)', 
+        zIndex: 10 
+      }}>
         <h1>{t('history.title')}</h1>
 
         <div className="flex flex-col gap-none">

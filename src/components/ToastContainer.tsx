@@ -32,7 +32,7 @@ const ToastContainer: React.FC = () => {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     position: 'fixed',
-    top: '20px',
+    top: 'calc(20px + var(--safe-area-top))',
     left: '20px',
     right: '20px',
     zIndex: 1000,
