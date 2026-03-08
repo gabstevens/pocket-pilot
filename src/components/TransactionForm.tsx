@@ -128,7 +128,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               disabled={readOnly}
               onClick={() => setType(type === 'expense' ? 'income' : 'expense')}
               title={type === 'expense' ? t('add.expense') : t('add.income')}
-              className={`btn-type-toggle justify-center mr-sm ${isCondensed ? 'btn-type-toggle-condensed' : ''} ${type === 'expense' ? 'bg-expense' : 'bg-income'}`}
+              className={`btn-type-toggle justify-center mr-sm mb-xs ${isCondensed ? 'btn-type-toggle-condensed' : ''} ${type === 'expense' ? 'bg-expense' : 'bg-income'}`}
             >
               {type === 'expense' ? <Minus size={isCondensed ? 18 : 22} strokeWidth={3} /> : <Plus size={isCondensed ? 18 : 22} strokeWidth={3} />}
             </button>
