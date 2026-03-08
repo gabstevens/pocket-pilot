@@ -1,0 +1,63 @@
+{
+  "common": {
+    "confirm": "Conferma",
+    "cancel": "Annulla",
+    "added": "Transazione aggiunta",
+    "updated": "Transazione aggiornata",
+    "deleted": "Transazione eliminata",
+    "imported": "Dati importati con successo",
+    "exported": "Dati esportati",
+    "error": "Qualcosa è andato storto"
+  },
+  "nav": {
+    "add": "Aggiungi",
+    "stats": "Statistiche",
+    "history": "Storia",
+    "settings": "Impostazioni"
+  },
+  "add": {
+    "title": "Nuova Transazione",
+    "expense": "Uscita",
+    "income": "Entrata",
+    "amount": "Importo",
+    "quickSelect": "Selezione Rapida",
+    "category": "Categoria",
+    "date": "Data",
+    "note": "Nota (Opzionale)",
+    "notePlaceholder": "Descrizione...",
+    "submit": "Aggiungi Transazione",
+    "addCategory": "Aggiungi Categoria",
+    "categoryName": "Nome Categoria"
+  },
+  "dashboard": {
+    "title": "Panoramica",
+    "dateRange": "Intervallo Date",
+    "to": "a",
+    "balance": "BILANCIO",
+    "income": "ENTRATE",
+    "expense": "USCITE",
+    "management": "Gestione",
+    "export": "Esporta CSV",
+    "import": "Importa CSV",
+    "importConfirm": "Importare {{count}} transazioni?"
+  },
+  "history": {
+    "title": "Storia",
+    "dateRange": "Intervallo Date",
+    "to": "a",
+    "category": "Categoria",
+    "allCategories": "Tutte le Categorie",
+    "noTransactions": "Nessuna transazione in questo intervallo.",
+    "deleteConfirm": "Eliminare questa transazione?",
+    "editTitle": "Modifica",
+    "update": "Aggiorna"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "baseCurrency": "Valuta Principale",
+    "exchangeRates": "Tassi di Cambio",
+    "rateHelp": "Quanto di questa valuta equivale a 1 {{base}}?",
+    "dataPrivacy": "Tutti i dati sono memorizzati localmente sul tuo dispositivo."
+  }
+}
