@@ -129,6 +129,13 @@ describe('state', () => {
     const newState = reducer(state, action);
     expect(newState.draftTransaction.amount).toBe(100);
   });
+
+  it('should handle SET_PRIMARY_COLOR', () => {
+    const state = getInitialState();
+    const action: Action = { type: 'SET_PRIMARY_COLOR', payload: 'teal' };
+    const newState = reducer(state, action);
+    expect(newState.primaryColor).toBe('teal');
+  });
   
   it('should return default state for unknown action', () => {
     const state = getInitialState();

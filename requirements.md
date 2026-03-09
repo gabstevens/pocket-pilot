@@ -28,6 +28,9 @@ Pocket Pilot is a pure front-end PWA designed to help users track their incomes 
         - Ability to add, edit, and delete categories via Settings.
         - Categories can have custom colors and icons.
         - Protected deletion: Categories in use cannot be deleted.
+    - **Theme Customization:**
+        - The user can select from 4 primary colors (Black, Blue, Green, Purple) via Settings.
+        - The theme applies to the entire application UI.
     - **Data Portability:**
         - **Export to CSV:** Download all transaction data as a CSV file.
         - **Import from CSV:** Upload/Restore transactions from a previously exported CSV.

@@ -40,6 +40,8 @@
 
 ## Phase 4: Polish & PWA
 - [x] Fix iOS PWA safe area and keyboard layout issues.
+- [x] Add theme customization (Primary color selection).
+- [x] Improve transaction detail modal (Size, redundant buttons, and "Update" label).
 - [ ] Add animations/transitions for a "native app" feel.
 - [ ] Finalize manifest and offline configuration.
 - [ ] Test on mobile devices (simulated and/or actual).

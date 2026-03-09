@@ -67,6 +67,8 @@
     "import": "Import CSV",
     "categoryInUse": "Category cannot be deleted as it is used in some transactions.",
     "deleteCategoryConfirm": "Are you sure you want to delete '{{name}}'?",
-    "dataPrivacy": "All data is stored locally on your device."
+    "dataPrivacy": "All data is stored locally on your device.",
+    "theme": "Theme",
+    "primaryColor": "Primary Color"
   }
 }

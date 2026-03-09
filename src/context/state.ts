@@ -3,7 +3,7 @@ import { INITIAL_CATEGORIES } from '../constants';
 import { safeParse } from '../utils/storage';
 
 export const getInitialState = (): AppState => {
-  return {
+  const initialState: AppState = {
     transactions: safeParse('transactions', []),
     categories: safeParse('categories', INITIAL_CATEGORIES),
     language: localStorage.getItem('language') || (navigator.language === 'it-IT' ? 'it-IT' : 'en-US'),
@@ -12,8 +12,10 @@ export const getInitialState = (): AppState => {
     exchangeRates: safeParse<Record<string, number>>('exchangeRates', {}),
     toasts: [],
     activeDialog: null,
-    draftTransaction: {}
+    draftTransaction: {},
+    primaryColor: localStorage.getItem('primaryColor') || 'black'
   };
+  return initialState;
 };
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -117,6 +119,11 @@ export function reducer(state: AppState, action: Action): AppState {
           ...state.draftTransaction,
           ...action.payload
         }
+      };
+    case 'SET_PRIMARY_COLOR':
+      return {
+        ...state,
+        primaryColor: action.payload
       };
     default:
       return state;

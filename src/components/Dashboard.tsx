@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
-      <header className="p-sm border-bottom bg-white flex-shrink-0">
+      <header className="p-sm bg-header flex-shrink-0">
         <h1>{t('dashboard.title')}</h1>
         <DateRangePicker 
           startDate={startDate} 
@@ -60,7 +60,7 @@ const Dashboard: React.FC = () => {
 
       <main className="container flex-1 overflow-y-auto">
         <div className="flex flex-col gap-md">
-          <div className="card-dark flex flex-col items-center p-xl">
+          <div className="card-primary">
             <span className="text-sm opacity-80 font-bold tracking-wide uppercase">{t('dashboard.balance')} ({baseCurrency})</span>
             <h2 className="text-2xl font-black m-0 mt-xs">
               {summary.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

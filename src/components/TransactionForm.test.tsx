@@ -60,4 +60,11 @@ describe('TransactionForm', () => {
     // Now income (Plus icon) - Title update might need re-render check or just check style
     expect(toggleBtn).toHaveClass('bg-income');
   });
+
+  it('renders custom submit label when provided', () => {
+    const customLabel = 'Save Changes';
+    renderWithProvider(<TransactionForm onSubmit={vi.fn()} submitLabel={customLabel} />);
+    
+    expect(screen.getByRole('button', { name: customLabel })).toBeInTheDocument();
+  });
 });

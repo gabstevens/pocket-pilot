@@ -5,6 +5,7 @@ import { translations } from '../locales/i18n';
 import { getInitialState, reducer } from './state';
 import { generateUUID } from '../utils/uuid';
 import { TransactionContext } from './context';
+import { THEME_COLORS } from '../constants';
 
 export function TransactionProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, getInitialState());
@@ -16,9 +17,13 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('baseCurrency', state.baseCurrency);
     localStorage.setItem('lastCurrency', state.lastCurrency);
     localStorage.setItem('exchangeRates', JSON.stringify(state.exchangeRates));
+    localStorage.setItem('primaryColor', state.primaryColor);
     
     document.documentElement.lang = state.language.split('-')[0];
-  }, [state.transactions, state.categories, state.language, state.baseCurrency, state.lastCurrency, state.exchangeRates]);
+    const hexColor = THEME_COLORS[state.primaryColor] || THEME_COLORS.black;
+    document.documentElement.style.setProperty('--primary-color', hexColor);
+    document.documentElement.style.setProperty('--primary-bg', `${hexColor}04`); // 04 is ~1.5% opacity
+  }, [state.transactions, state.categories, state.language, state.baseCurrency, state.lastCurrency, state.exchangeRates, state.primaryColor]);
 
   const t = useMemo(() => (path: string, replacements?: Record<string, string | number>) => {
     const keys = path.split('.');

@@ -67,6 +67,8 @@
     "import": "Importa CSV",
     "categoryInUse": "La categoria non può essere eliminata perché è utilizzata in alcune transazioni.",
     "deleteCategoryConfirm": "Sei sicuro di voler eliminare '{{name}}'?",
-    "dataPrivacy": "Tutti i dati sono memorizzati localmente sul tuo dispositivo."
-    }
+    "dataPrivacy": "Tutti i dati sono memorizzati localmente sul tuo dispositivo.",
+    "theme": "Tema",
+    "primaryColor": "Colore Principale"
+  }
 }

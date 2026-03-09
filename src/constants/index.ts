@@ -15,6 +15,14 @@ export const CATEGORY_COLORS: Record<string, string> = {
   slate: '#64748b',
 };
 
+export const THEME_COLORS: Record<string, string> = {
+  black: '#000000',
+  blue: '#3b82f6',
+  green: '#22c55e',
+  teal: '#14b8a6',
+  purple: '#a855f7',
+};
+
 export const INITIAL_CATEGORIES: Category[] = [
   { name: 'Food', icon: 'Coffee', color: 'orange' },
   { name: 'Transport', icon: 'Bus', color: 'blue' },

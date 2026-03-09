@@ -19,7 +19,8 @@
     - **Destructive Red:** Used for Expenses and negative balances.
     - **Interactive States:** High-contrast focus and active states.
 - **Aesthetics:**
-    - **Sharp & Minimalist:** High contrast, minimal border-radius, clean lines.
-    - **Theme:** Single high-contrast light theme (no dark mode).
-- **Settings/Actions:** CSV Export/Import tools accessible via the Dashboard or a header icon.
+    - **Sharp & Minimalist:** High contrast, minimal border-radius (0px), clean lines.
+    - **Customizable Theme:** The user can select from 4 primary colors (Black, Blue, Green, Purple) via Settings.
+    - **Theme Persistence:** The selected color is stored in `localStorage` and applied globally via CSS Variables.
+- **Settings/Actions:** accessible via the Settings tab.
 - **Modals:** Full-screen modal for editing transactions on the History page.

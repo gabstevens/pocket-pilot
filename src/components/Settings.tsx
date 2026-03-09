@@ -1,7 +1,7 @@
 import React, { useState, useId, useRef } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download, Upload, AlertTriangle, Tag, Edit2, Trash2, Plus } from 'lucide-react';
-import { COMMON_CURRENCIES, CATEGORY_COLORS } from '../constants';
+import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download, Upload, AlertTriangle, Tag, Edit2, Trash2, Plus, Palette } from 'lucide-react';
+import { COMMON_CURRENCIES, CATEGORY_COLORS, THEME_COLORS } from '../constants';
 import DateRangePicker from './DateRangePicker';
 import { exportTransactionsToCSV, downloadCSV, parseCSV } from '../utils/csv';
 import type { Category, Transaction } from '../types';
@@ -9,7 +9,7 @@ import CategoryIcon from './CategoryIcon';
 import AddCategoryModal from './AddCategoryModal';
 
 const Settings: React.FC = () => {
-  const { language, baseCurrency, exchangeRates, transactions, categories, dispatch, t, addToast, confirm } = useTransactions();
+  const { language, baseCurrency, exchangeRates, transactions, categories, primaryColor, dispatch, t, addToast, confirm } = useTransactions();
   const idPrefix = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,6 +33,10 @@ const Settings: React.FC = () => {
 
   const handleBaseCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch({ type: 'SET_BASE_CURRENCY', payload: e.target.value });
+  };
+
+  const handleColorChange = (color: string) => {
+    dispatch({ type: 'SET_PRIMARY_COLOR', payload: color });
   };
 
   const currentRate = exchangeRates[selectedCurrency]?.toString() || '1';
@@ -127,7 +131,7 @@ const Settings: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
-      <header className="p-sm border-bottom bg-white flex-shrink-0">
+      <header className="p-sm bg-header flex-shrink-0">
         <h1>{t('settings.title')}</h1>
       </header>
 
@@ -164,6 +168,30 @@ const Settings: React.FC = () => {
             </select>
           </div>
 
+          {/* Primary Color */}
+          <div className="form-group">
+            <label className="flex items-center gap-sm">
+              <Palette size={16} /> {t('settings.primaryColor')}
+            </label>
+            <div className="flex gap-md mt-xs">
+              {Object.entries(THEME_COLORS).map(([name, hex]) => (
+                <button
+                  key={name}
+                  onClick={() => handleColorChange(name)}
+                  className="w-11 h-11 p-0 border-2 flex items-center justify-center flex-shrink-0"
+                  style={{ 
+                    backgroundColor: hex,
+                    borderColor: primaryColor === name ? 'var(--text-color)' : 'transparent'
+                  }}
+                  aria-label={`Select ${name} theme`}
+                >
+                  {primaryColor === name && (
+                    <div className="w-2 h-2 bg-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+            </div>
           {/* Unified Exchange Rate Editor */}
           <div className="form-group">
             <label htmlFor={`${idPrefix}-rate`} className="flex items-center gap-sm">

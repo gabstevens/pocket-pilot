@@ -83,7 +83,7 @@ const History: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
-      <header className="p-sm border-bottom bg-white flex-shrink-0">
+      <header className="p-sm bg-header flex-shrink-0">
         <h1>{t('history.title')}</h1>
         
         <div className="flex flex-col gap-sm">
@@ -188,7 +188,8 @@ const History: React.FC = () => {
       {/* Transaction Details/Edit Drawer/Modal */}
       {selectedTransactionId && selectedTransaction && (
         <div className="modal-overlay fixed inset-0 bg-opacity-50 z-200 flex items-end">
-          <div className="bg-white w-full max-h-90dvh overflow-y-auto p-md flex flex-col slide-up shadow-lg pb-xl">            <div className="flex justify-between items-center mb-lg">
+          <div className="bg-white w-full max-h-[95dvh] overflow-y-auto p-md flex flex-col slide-up shadow-lg pb-xl">
+            <div className="flex justify-between items-center mb-lg">
               <span className="text-xs font-black opacity-50">{isEditing ? 'EDITING' : 'DETAILS'}</span>
               <button 
                 onClick={() => {
@@ -202,86 +203,75 @@ const History: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex-1">
-              {isEditing ? (
-                <TransactionForm 
-                  initialData={selectedTransaction} 
-                  onSubmit={(data) => {
-                    dispatch({ 
-                      type: 'UPDATE_TRANSACTION', 
-                      payload: { ...selectedTransaction, ...data } 
-                    });
-                    setIsEditing(false);
-                    addToast(t('common.updated'), 'success');
-                  }}
-                  onCancel={() => setIsEditing(false)}
-                />
-              ) : (
-                <div className="flex flex-col gap-lg">
-                  <div className="flex flex-col items-center gap-md">
-                    <div 
-                      className="w-16 h-16 flex items-center justify-center border-2"
-                      style={{ 
-                        backgroundColor: getCategoryColor(selectedTransaction.category) ? `${CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!]}15` : 'var(--accent-color)',
-                        borderColor: getCategoryColor(selectedTransaction.category) ? CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!] : 'var(--border-color)'
-                      }}
-                    >
-                      <CategoryIcon 
-                        name={getCategoryIcon(selectedTransaction.category)} 
-                        size={32} 
-                        categoryColor={getCategoryColor(selectedTransaction.category)}
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <h2 className={`${selectedTransaction.type === 'income' ? 'text-success' : 'text-error'} text-2xl font-black m-0`}>
-                        {selectedTransaction.type === 'income' ? '+' : '-'}{selectedTransaction.amount.toFixed(2)}
-                        <span className="text-md ml-xs opacity-50">{selectedTransaction.currency}</span>
-                      </h2>
-                      <span className="font-bold uppercase tracking-wide">{selectedTransaction.category}</span>
-                    </div>
+            {!isEditing ? (
+              <div className="flex flex-col gap-lg">
+                <div className="flex flex-col items-center gap-md">
+                  <div 
+                    className="w-16 h-16 flex items-center justify-center border-2"
+                    style={{ 
+                      backgroundColor: getCategoryColor(selectedTransaction.category) ? `${CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!]}15` : 'var(--accent-color)',
+                      borderColor: getCategoryColor(selectedTransaction.category) ? CATEGORY_COLORS[getCategoryColor(selectedTransaction.category)!] : 'var(--border-color)'
+                    }}
+                  >
+                    <CategoryIcon 
+                      name={getCategoryIcon(selectedTransaction.category)} 
+                      size={32} 
+                      categoryColor={getCategoryColor(selectedTransaction.category)}
+                    />
                   </div>
-
-                  <div className="flex flex-col gap-md">
-                    <div className="flex items-start gap-md">
-                      <Calendar size={18} className="text-muted mt-xs" />
-                      <div className="flex flex-col">
-                        <label className="m-0">Date & Time</label>
-                        <span className="font-semibold">{formatDateTime(selectedTransaction.date)}</span>
-                      </div>
-                    </div>
-                    {selectedTransaction.note && (
-                      <div className="flex items-start gap-md">
-                        <FileText size={18} className="text-muted mt-xs" />
-                        <div className="flex flex-col">
-                          <label className="m-0">Note</label>
-                          <span className="font-medium lh-md">{selectedTransaction.note}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-md mt-lg pt-md border-top">
-                    <button className="flex-1 btn-primary p-md" onClick={() => setIsEditing(true)}>
-                      <Edit2 size={18} /> {t('history.editTitle')}
-                    </button>
-                    <button 
-                      className="p-md bg-white border-error text-error"
-                      onClick={handleDelete}
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                  <div className="flex flex-col items-center">
+                    <h2 className={`${selectedTransaction.type === 'income' ? 'text-success' : 'text-error'} text-2xl font-black m-0`}>
+                      {selectedTransaction.type === 'income' ? '+' : '-'}{selectedTransaction.amount.toFixed(2)}
+                      <span className="text-md ml-xs opacity-50">{selectedTransaction.currency}</span>
+                    </h2>
+                    <span className="font-bold uppercase tracking-wide">{selectedTransaction.category}</span>
                   </div>
                 </div>
-              )}
-            </div>
-            
-            {!isEditing && (
-              <button 
-                className="mt-md p-md bg-white border-muted btn-full"
-                onClick={() => setSelectedTransactionId(null)}
-              >
-                {t('common.cancel')}
-              </button>
+
+                <div className="flex flex-col gap-md">
+                  <div className="flex items-start gap-md">
+                    <Calendar size={18} className="text-muted mt-xs" />
+                    <div className="flex flex-col">
+                      <label className="m-0">Date & Time</label>
+                      <span className="font-semibold">{formatDateTime(selectedTransaction.date)}</span>
+                    </div>
+                  </div>
+                  {selectedTransaction.note && (
+                    <div className="flex items-start gap-md">
+                      <FileText size={18} className="text-muted mt-xs" />
+                      <div className="flex flex-col">
+                        <label className="m-0">Note</label>
+                        <span className="font-medium lh-md">{selectedTransaction.note}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-md mt-lg pt-md border-top">
+                  <button className="flex-1 btn-primary p-md" onClick={() => setIsEditing(true)}>
+                    <Edit2 size={18} /> {t('history.editTitle')}
+                  </button>
+                  <button 
+                    className="p-md bg-white border-error text-error"
+                    onClick={handleDelete}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <TransactionForm 
+                initialData={selectedTransaction} 
+                onSubmit={(data) => {
+                  dispatch({ 
+                    type: 'UPDATE_TRANSACTION', 
+                    payload: { ...selectedTransaction, ...data } 
+                  });
+                  setIsEditing(false);
+                  addToast(t('common.updated'), 'success');
+                }}
+                submitLabel={t('history.update')}
+              />
             )}
           </div>
         </div>

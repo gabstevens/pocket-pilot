@@ -41,6 +41,7 @@ export interface AppState {
   toasts: Toast[];
   activeDialog: Dialog | null;
   draftTransaction: Partial<Transaction>;
+  primaryColor: string;
 }
 
 export type Action =
@@ -59,4 +60,5 @@ export type Action =
   | { type: 'REMOVE_TOAST'; payload: string }
   | { type: 'OPEN_DIALOG'; payload: Dialog }
   | { type: 'CLOSE_DIALOG' }
-  | { type: 'SET_DRAFT_TRANSACTION'; payload: Partial<Transaction> };
+  | { type: 'SET_DRAFT_TRANSACTION'; payload: Partial<Transaction> }
+  | { type: 'SET_PRIMARY_COLOR'; payload: string };

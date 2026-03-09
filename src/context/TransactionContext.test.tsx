@@ -4,7 +4,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const TestComponent = () => {
-  const { transactions, language, baseCurrency, toasts, activeDialog, dispatch, addToast, confirm } = useTransactions();
+  const { transactions, language, baseCurrency, primaryColor, toasts, activeDialog, dispatch, addToast, confirm } = useTransactions();
   
   return (
     <div>
@@ -12,9 +12,11 @@ const TestComponent = () => {
       <div data-testid="base">{baseCurrency}</div>
       <div data-testid="toast-count">{toasts.length}</div>
       <div data-testid="dialog-active">{activeDialog ? 'yes' : 'no'}</div>
+      <div data-testid="primary-color">{primaryColor}</div>
       
       <button data-testid="set-it" onClick={() => dispatch({ type: 'SET_LANGUAGE', payload: 'it-IT' })}>Set IT</button>
       <button data-testid="set-base" onClick={() => dispatch({ type: 'SET_BASE_CURRENCY', payload: 'EUR' })}>Set EUR</button>
+      <button data-testid="set-color-blue" onClick={() => dispatch({ type: 'SET_PRIMARY_COLOR', payload: 'blue' })}>Set Blue</button>
       <button data-testid="add-toast" onClick={() => addToast('Test Toast', 'success')}>Add Toast</button>
       <button data-testid="open-confirm" onClick={() => confirm({ title: 'Confirm?', message: 'Sure?' })}>Open Confirm</button>
       
@@ -78,6 +80,28 @@ describe('TransactionContext Integration', () => {
     const saved = JSON.parse(localStorage.getItem('transactions') || '[]');
     expect(saved).toHaveLength(1);
     expect(saved[0].id).toBe('t1');
+  });
+
+  it('handles theme primary color and persistence', () => {
+    render(
+      <TransactionProvider>
+        <TestComponent />
+      </TransactionProvider>
+    );
+
+    expect(screen.getByTestId('primary-color').textContent).toBe('black');
+    
+    act(() => {
+      screen.getByTestId('set-color-blue').click();
+    });
+    
+    expect(screen.getByTestId('primary-color').textContent).toBe('blue');
+    expect(localStorage.getItem('primaryColor')).toBe('blue');
+    
+    // Check CSS variables
+    const styles = document.documentElement.style;
+    expect(styles.getPropertyValue('--primary-color')).toBe('#3b82f6');
+    expect(styles.getPropertyValue('--primary-bg')).toBe('#3b82f604');
   });
 
   it('handles toasts with auto-dismissal', async () => {
