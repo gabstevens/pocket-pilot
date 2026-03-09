@@ -187,9 +187,8 @@ const History: React.FC = () => {
 
       {/* Transaction Details/Edit Drawer/Modal */}
       {selectedTransactionId && selectedTransaction && (
-        <div className="modal-overlay fixed inset-0 bg-opacity-50 z-50 flex items-end">
-          <div className="bg-white w-full max-h-90dvh overflow-y-auto p-md flex flex-col slide-up shadow-lg">
-            <div className="flex justify-between items-center mb-lg">
+        <div className="modal-overlay fixed inset-0 bg-opacity-50 z-200 flex items-end">
+          <div className="bg-white w-full max-h-90dvh overflow-y-auto p-md flex flex-col slide-up shadow-lg pb-xl">            <div className="flex justify-between items-center mb-lg">
               <span className="text-xs font-black opacity-50">{isEditing ? 'EDITING' : 'DETAILS'}</span>
               <button 
                 onClick={() => {

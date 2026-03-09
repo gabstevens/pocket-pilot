@@ -49,6 +49,8 @@ export type Action =
   | { type: 'DELETE_TRANSACTION'; payload: string }
   | { type: 'SET_TRANSACTIONS'; payload: Transaction[] }
   | { type: 'ADD_CATEGORY'; payload: Category }
+  | { type: 'UPDATE_CATEGORY'; payload: { oldName: string; category: Category } }
+  | { type: 'DELETE_CATEGORY'; payload: string }
   | { type: 'SET_CATEGORIES'; payload: Category[] }
   | { type: 'SET_LANGUAGE'; payload: string }
   | { type: 'SET_BASE_CURRENCY'; payload: string }

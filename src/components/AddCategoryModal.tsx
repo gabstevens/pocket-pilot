@@ -3,6 +3,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import CategoryIcon from './CategoryIcon';
 import { X } from 'lucide-react';
 import { CATEGORY_COLORS } from '../constants';
+import type { Category } from '../types';
 
 const AVAILABLE_ICONS = [
   'Coffee', 'Bus', 'Wallet', 'Building', 'Gamepad2', 'Stethoscope', 
@@ -12,23 +13,34 @@ const AVAILABLE_ICONS = [
 ];
 
 interface AddCategoryModalProps {
+  initialData?: Category;
   onClose: () => void;
   onSuccess: (categoryName: string) => void;
 }
 
-const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess }) => {
+const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ initialData, onClose, onSuccess }) => {
   const { dispatch, t } = useTransactions();
   const id = useId();
-  const [newCategory, setNewCategory] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('Tag');
-  const [selectedColor, setSelectedColor] = useState('blue');
+  const [newCategory, setNewCategory] = useState(initialData?.name || '');
+  const [selectedIcon, setSelectedIcon] = useState(initialData?.icon || 'Tag');
+  const [selectedColor, setSelectedColor] = useState(initialData?.color || 'blue');
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
-      dispatch({ 
-        type: 'ADD_CATEGORY', 
-        payload: { name: newCategory.trim(), icon: selectedIcon, color: selectedColor } 
-      });
+      if (initialData) {
+        dispatch({
+          type: 'UPDATE_CATEGORY',
+          payload: {
+            oldName: initialData.name,
+            category: { name: newCategory.trim(), icon: selectedIcon, color: selectedColor }
+          }
+        });
+      } else {
+        dispatch({ 
+          type: 'ADD_CATEGORY', 
+          payload: { name: newCategory.trim(), icon: selectedIcon, color: selectedColor } 
+        });
+      }
       onSuccess(newCategory.trim());
       onClose();
     }
@@ -38,7 +50,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ onClose, onSuccess 
     <div className="dialog-overlay z-50">
       <div className="card dialog-content max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-md">
-          <h2>{t('add.addCategory')}</h2>
+          <h2>{initialData ? t('history.editTitle') : t('add.addCategory')}</h2>
           <button type="button" onClick={onClose} className="btn-ghost p-sm" aria-label="Close">
             <X size={20} />
           </button>

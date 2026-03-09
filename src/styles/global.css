@@ -480,9 +480,13 @@ button.btn-type-toggle-condensed {
 .left-0 { left: 0; }
 .right-0 { right: 0; }
 .z-50 { z-index: 50; }
-.top-1\/2 { top: 50%; }
+.z-100 { z-index: 100; }
+.z-200 { z-index: 200; }
+.z-300 { z-index: 300; }
+.z-modal { z-index: 500; }
+.top-1/2 { top: 50%; }
 .left-sm { left: var(--spacing-sm); }
-.-translate-y-1\/2 { transform: translateY(-50%); }
+.-translate-y-1/2 { transform: translateY(-50%); }
 
 /* Borders & Backgrounds */
 .bg-white { background-color: white; }

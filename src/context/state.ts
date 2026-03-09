@@ -52,6 +52,21 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         categories: [...state.categories, action.payload]
       };
+    case 'UPDATE_CATEGORY':
+      return {
+        ...state,
+        categories: state.categories.map(c => 
+          c.name === action.payload.oldName ? action.payload.category : c
+        ),
+        transactions: state.transactions.map(t => 
+          t.category === action.payload.oldName ? { ...t, category: action.payload.category.name } : t
+        )
+      };
+    case 'DELETE_CATEGORY':
+      return {
+        ...state,
+        categories: state.categories.filter(c => c.name !== action.payload)
+      };
     case 'SET_CATEGORIES':
       return {
         ...state,

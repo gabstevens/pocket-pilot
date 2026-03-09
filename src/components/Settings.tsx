@@ -1,15 +1,20 @@
 import React, { useState, useId, useRef } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download, Upload, AlertTriangle } from 'lucide-react';
-import { COMMON_CURRENCIES } from '../constants';
+import { Globe, ShieldCheck, Landmark, ArrowRightLeft, Database, Download, Upload, AlertTriangle, Tag, Edit2, Trash2, Plus } from 'lucide-react';
+import { COMMON_CURRENCIES, CATEGORY_COLORS } from '../constants';
 import DateRangePicker from './DateRangePicker';
 import { exportTransactionsToCSV, downloadCSV, parseCSV } from '../utils/csv';
-import type { Transaction } from '../types';
+import type { Category, Transaction } from '../types';
+import CategoryIcon from './CategoryIcon';
+import AddCategoryModal from './AddCategoryModal';
 
 const Settings: React.FC = () => {
-  const { language, baseCurrency, exchangeRates, transactions, dispatch, t, addToast, confirm } = useTransactions();
+  const { language, baseCurrency, exchangeRates, transactions, categories, dispatch, t, addToast, confirm } = useTransactions();
   const idPrefix = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
@@ -99,6 +104,24 @@ const Settings: React.FC = () => {
       } finally {
         e.target.value = '';
       }
+    }
+  };
+
+  const handleDeleteCategory = async (cat: Category) => {
+    const isUsed = transactions.some(t => t.category === cat.name);
+    if (isUsed) {
+      addToast(t('settings.categoryInUse'), 'error');
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: t('common.confirm'),
+      message: t('settings.deleteCategoryConfirm', { name: cat.name })
+    });
+
+    if (confirmed) {
+      dispatch({ type: 'DELETE_CATEGORY', payload: cat.name });
+      addToast(t('common.deleted'), 'success');
     }
   };
 
