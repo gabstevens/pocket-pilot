@@ -24,6 +24,10 @@ Pocket Pilot is a pure front-end PWA designed to help users track their incomes 
 - **Data Management:**
     - **Editing:** Performed via a full-screen modal on the History page, reusing the "Quick Add" form logic.
     - **Deletion:** Ability to remove entries directly from the list or within the edit modal.
+    - **Category Management:**
+        - Ability to add, edit, and delete categories via Settings.
+        - Categories can have custom colors and icons.
+        - Protected deletion: Categories in use cannot be deleted.
     - **Data Portability:**
         - **Export to CSV:** Download all transaction data as a CSV file.
         - **Import from CSV:** Upload/Restore transactions from a previously exported CSV.

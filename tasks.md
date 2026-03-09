@@ -30,9 +30,9 @@
 ## Infrastructure & Quality
 - [x] Configure Vitest with JSDOM for React/DOM testing.
 - [x] Establish Senior Engineering Guidelines (`GEMINI.md`).
-- [x] Fix core bugs (Toast IDs, TransactionForm validation).
+- [x] Fix core bugs (Toast IDs, TransactionForm validation, Modal z-index).
 - [x] Achieve 100% logic coverage in unit tests.
-- [x] Implement core E2E tests with Playwright.
+- [x] Implement core E2E tests with Playwright (CRUD, Layout, Categories).
 - [x] Configure base path and routing for GitHub Pages deployment.
 - [x] Update PWA configuration for subfolder hosting.
 - [x] Standardize labels and refactor inline styles to utility classes.
@@ -43,4 +43,4 @@
 - [ ] Add animations/transitions for a "native app" feel.
 - [ ] Finalize manifest and offline configuration.
 - [ ] Test on mobile devices (simulated and/or actual).
-- [ ] Ensure accessible labeling (Aria labels, etc.).
+- [/] Ensure accessible labeling (Aria labels, etc.).
