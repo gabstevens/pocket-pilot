@@ -196,6 +196,7 @@ const History: React.FC = () => {
                   setIsEditing(false);
                 }}
                 className="btn-ghost p-sm"
+                aria-label="Close"
               >
                 <X size={24} />
               </button>

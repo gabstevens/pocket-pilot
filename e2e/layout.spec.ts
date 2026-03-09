@@ -42,7 +42,7 @@ test('transaction detail modal should be above bottom navigation', async ({ page
 
   // 5. Visual Check - try to click the close button of the modal
   // If the navbar was on top, it might intercept clicks depending on layout
-  const closeButton = modalOverlay.locator('button:has(svg)');
+  const closeButton = page.getByRole('button', { name: 'Close', exact: true });
   await expect(closeButton).toBeVisible();
   await closeButton.click();
   await expect(modalOverlay).not.toBeVisible();

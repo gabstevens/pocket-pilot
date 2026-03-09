@@ -410,6 +410,7 @@ button.btn-type-toggle-condensed {
   justify-content: center;
   z-index: 2000;
   padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--nav-height));
   backdrop-filter: blur(2px);
 }
 
@@ -486,9 +487,9 @@ button.btn-type-toggle-condensed {
 .z-200 { z-index: 200; }
 .z-300 { z-index: 300; }
 .z-modal { z-index: 500; }
-.top-1/2 { top: 50%; }
+.top-1\/2 { top: 50%; }
 .left-sm { left: var(--spacing-sm); }
-.-translate-y-1/2 { transform: translateY(-50%); }
+.-translate-y-1\/2 { transform: translateY(-50%); }
 
 /* Borders & Backgrounds */
 .bg-white { background-color: white; }

@@ -43,7 +43,7 @@ describe('state', () => {
 
   it('should handle ADD_CATEGORY', () => {
     const state = getInitialState();
-    const category: Category = { name: 'NewCat', icon: 'star' };
+    const category: Category = { name: 'NewCat', icon: 'star', color: 'blue' };
     const action: Action = { type: 'ADD_CATEGORY', payload: category };
     const newState = reducer(state, action);
     expect(newState.categories.some(c => c.name === 'NewCat')).toBe(true);
@@ -51,6 +51,27 @@ describe('state', () => {
     // Duplicate category
     const newState2 = reducer(newState, action);
     expect(newState2.categories.length).toBe(newState.categories.length);
+  });
+
+  it('should handle UPDATE_CATEGORY and update transactions', () => {
+    const oldCategory: Category = { name: 'OldName', icon: 'star', color: 'blue' };
+    const transaction: Transaction = { id: '1', amount: 10, type: 'expense', category: 'OldName', date: '2023-01-01', note: '', currency: 'USD', createdAt: Date.now() };
+    const state = { ...getInitialState(), categories: [oldCategory], transactions: [transaction] };
+    
+    const newCategory: Category = { name: 'NewName', icon: 'heart', color: 'red' };
+    const action: Action = { type: 'UPDATE_CATEGORY', payload: { oldName: 'OldName', category: newCategory } };
+    const newState = reducer(state, action);
+    
+    expect(newState.categories[0]).toEqual(newCategory);
+    expect(newState.transactions[0].category).toBe('NewName');
+  });
+
+  it('should handle DELETE_CATEGORY', () => {
+    const category: Category = { name: 'ToDel', icon: 'star' };
+    const state = { ...getInitialState(), categories: [category] };
+    const action: Action = { type: 'DELETE_CATEGORY', payload: 'ToDel' };
+    const newState = reducer(state, action);
+    expect(newState.categories.some(c => c.name === 'ToDel')).toBe(false);
   });
 
   it('should handle SET_CATEGORIES', () => {

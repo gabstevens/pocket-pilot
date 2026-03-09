@@ -120,7 +120,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ initialData, onClos
           className="btn-primary btn-full p-md mt-md justify-center" 
           onClick={handleAddCategory} 
         >
-          {t('add.addCategory')}
+          {initialData ? t('history.editTitle') : t('add.addCategory')}
         </button>
       </div>
     </div>
