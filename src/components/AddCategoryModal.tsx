@@ -88,17 +88,30 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ initialData, onClos
         <div className="form-group">
           <label>Icon</label>
           <div className="icon-grid border-color">
-            {AVAILABLE_ICONS.map((iconName) => (
-              <button 
-                key={iconName}
-                type="button"
-                onClick={() => setSelectedIcon(iconName)}
-                aria-label={`Select ${iconName} icon`}
-                className={`category-btn ${selectedIcon === iconName ? 'category-btn-active' : 'bg-white border-none'}`}
-              >
-                <CategoryIcon name={iconName} size={20} categoryColor={selectedIcon === iconName ? undefined : selectedColor} />
-              </button>
-            ))}
+            {AVAILABLE_ICONS.map((iconName) => {
+              const isActive = selectedIcon === iconName;
+              return (
+                <button 
+                  key={iconName}
+                  type="button"
+                  onClick={() => setSelectedIcon(iconName)}
+                  aria-label={`Select ${iconName} icon`}
+                  className={`category-btn ${isActive ? '' : 'bg-white border-none'}`}
+                  style={{
+                    backgroundColor: isActive ? CATEGORY_COLORS[selectedColor] : 'white',
+                    color: isActive ? 'white' : 'inherit',
+                    borderColor: isActive ? CATEGORY_COLORS[selectedColor] : 'transparent'
+                  }}
+                >
+                  <CategoryIcon 
+                    name={iconName} 
+                    size={20} 
+                    categoryColor={isActive ? undefined : selectedColor} 
+                    color={isActive ? 'white' : undefined}
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
 

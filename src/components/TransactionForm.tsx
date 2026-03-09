@@ -117,10 +117,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     }
   };
 
-  const getCategoryColor = (name: string) => {
-    return categories.find(c => c.name === name)?.color;
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit} className="flex flex-col gap-none btn-full">

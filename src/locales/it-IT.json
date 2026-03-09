@@ -62,9 +62,11 @@
     "dataManagement": "Gestione Dati",
     "exportHelp": "Seleziona un intervallo di date per esportare i tuoi dati in CSV.",
     "export": "Esporta CSV",
-    "importHelp": "Importa transazioni da un file CSV. Il file dovrebbe corrispondere al formato di esportazione.",
+    "importHelp": "Importa transazioni da un file CSV. Il file deve corrispondere al formato di esportazione.",
     "importWarning": "ATTENZIONE: L'importazione dei dati potrebbe causare duplicati se le stesse transazioni esistono già. Le transazioni con ID corrispondenti verranno aggiornate.",
     "import": "Importa CSV",
+    "categoryInUse": "La categoria non può essere eliminata perché è utilizzata in alcune transazioni.",
+    "deleteCategoryConfirm": "Sei sicuro di voler eliminare '{{name}}'?",
     "dataPrivacy": "Tutti i dati sono memorizzati localmente sul tuo dispositivo."
-  }
+    }
 }

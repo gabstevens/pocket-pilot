@@ -270,46 +270,46 @@ const Settings: React.FC = () => {
             <label className="flex items-center gap-sm">
               <Tag size={16} /> {t('add.category')}
             </label>
-            <div className="card flex flex-col gap-sm p-md">
-              <div className="flex flex-col gap-sm">
+            <div className="card flex flex-col gap-none p-sm">
+              <div className="flex flex-col gap-none">
                 {categories.map(cat => (
-                  <div key={cat.name} className="flex items-center justify-between p-sm border-bottom">
+                  <div key={cat.name} className="flex items-center justify-between p-xs border-bottom">
                     <div className="flex items-center gap-sm min-w-0">
                       <div 
-                        className="w-10 h-10 flex-shrink-0 flex items-center justify-center border-1"
+                        className="w-8 h-8 flex-shrink-0 flex items-center justify-center border-1"
                         style={{ 
                           backgroundColor: cat.color ? `${CATEGORY_COLORS[cat.color]}15` : 'transparent',
                           borderColor: cat.color ? CATEGORY_COLORS[cat.color] : 'var(--border-color)'
                         }}
                       >
-                        <CategoryIcon name={cat.icon} size={20} categoryColor={cat.color} />
+                        <CategoryIcon name={cat.icon} size={18} categoryColor={cat.color} />
                       </div>
-                      <span className="font-bold text-sm uppercase truncate">{cat.name}</span>
+                      <span className="font-bold text-xs uppercase truncate">{cat.name}</span>
                     </div>
-                    <div className="flex gap-xs flex-shrink-0">
+                    <div className="flex gap-none flex-shrink-0">
                       <button 
-                        className="btn-ghost p-sm" 
+                        className="btn-ghost p-xs" 
                         onClick={() => setEditingCategory(cat)}
                         aria-label="Edit category"
                       >
-                        <Edit2 size={16} />
+                        <Edit2 size={14} />
                       </button>
                       <button 
-                        className="btn-ghost p-sm text-error" 
+                        className="btn-ghost p-xs text-error" 
                         onClick={() => handleDeleteCategory(cat)}
                         aria-label="Delete category"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
               <button 
-                className="btn-primary btn-full justify-center mt-sm"
+                className="btn-primary btn-full justify-center mt-sm p-sm text-sm"
                 onClick={() => setIsAddingCategory(true)}
               >
-                <Plus size={18} /> {t('add.addCategory')}
+                <Plus size={16} /> {t('add.addCategory')}
               </button>
             </div>
           </div>

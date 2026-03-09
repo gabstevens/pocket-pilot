@@ -65,6 +65,8 @@
     "importHelp": "Import transactions from a CSV file. The file should match the export format.",
     "importWarning": "WARNING: Importing data may cause duplicates if the same transactions already exist. Transactions with matching IDs will be updated.",
     "import": "Import CSV",
+    "categoryInUse": "Category cannot be deleted as it is used in some transactions.",
+    "deleteCategoryConfirm": "Are you sure you want to delete '{{name}}'?",
     "dataPrivacy": "All data is stored locally on your device."
   }
 }

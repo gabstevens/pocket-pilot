@@ -451,6 +451,8 @@ button.btn-type-toggle-condensed {
 
 .w-full { width: 100%; }
 .h-full { height: 100%; }
+.w-8 { width: 32px; }
+.h-8 { height: 32px; }
 .w-9 { width: 36px; }
 .h-9 { height: 36px; }
 .w-10 { width: 40px; }
