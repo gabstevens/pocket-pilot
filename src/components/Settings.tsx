@@ -264,8 +264,71 @@ const Settings: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Categories Management */}
+          <div className="form-group mb-xl">
+            <label className="flex items-center gap-sm">
+              <Tag size={16} /> {t('add.category')}
+            </label>
+            <div className="card flex flex-col gap-sm p-md">
+              <div className="flex flex-col gap-sm">
+                {categories.map(cat => (
+                  <div key={cat.name} className="flex items-center justify-between p-sm border-bottom">
+                    <div className="flex items-center gap-sm min-w-0">
+                      <div 
+                        className="w-10 h-10 flex-shrink-0 flex items-center justify-center border-1"
+                        style={{ 
+                          backgroundColor: cat.color ? `${CATEGORY_COLORS[cat.color]}15` : 'transparent',
+                          borderColor: cat.color ? CATEGORY_COLORS[cat.color] : 'var(--border-color)'
+                        }}
+                      >
+                        <CategoryIcon name={cat.icon} size={20} categoryColor={cat.color} />
+                      </div>
+                      <span className="font-bold text-sm uppercase truncate">{cat.name}</span>
+                    </div>
+                    <div className="flex gap-xs flex-shrink-0">
+                      <button 
+                        className="btn-ghost p-sm" 
+                        onClick={() => setEditingCategory(cat)}
+                        aria-label="Edit category"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn-ghost p-sm text-error" 
+                        onClick={() => handleDeleteCategory(cat)}
+                        aria-label="Delete category"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button 
+                className="btn-primary btn-full justify-center mt-sm"
+                onClick={() => setIsAddingCategory(true)}
+              >
+                <Plus size={18} /> {t('add.addCategory')}
+              </button>
+            </div>
+          </div>
         </div>
       </main>
+
+      {(isAddingCategory || editingCategory) && (
+        <AddCategoryModal 
+          initialData={editingCategory || undefined}
+          onClose={() => {
+            setIsAddingCategory(false);
+            setEditingCategory(null);
+          }}
+          onSuccess={() => {
+            setIsAddingCategory(false);
+            setEditingCategory(null);
+          }}
+        />
+      )}
     </div>
   );
 };
